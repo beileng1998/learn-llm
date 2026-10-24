@@ -1,7 +1,7 @@
 # Curriculum design
 
 Tier 2, Track A. Status: decided 2026-10-24: route R3, the recommended gradient
-combination, and the same English text for every language from ch 10. Decisions live in
+combination, and the same English text for every language from ch 11. Decisions live in
 SCOPE.md; this file keeps the reasoning and the rejected options.
 
 ## Brief
@@ -51,9 +51,9 @@ These are the parts that make the promise checkable rather than a hope.
 |---|---|---|---|
 | **R1** | Course order as drafted: vision (231n) → language (224N) → scale (336) → serving | None; each part has its own datasets | Most faithful to sources; least continuity between parts |
 | **R2** | One problem from start to end: predict the next character, solved better and better (counting → linear → MLP → RNN → attention → transformer → serving) | One dataset and one leaderboard for the whole course | Strongest continuity; vision shrinks to one optional detour; ch 01–02 harder to picture |
-| **R3** (recommended) | Numbers → digits → text. Learn the machinery on things you can see (a line, then handwritten digits, then a small CNN), then switch once to text, and from then on one text dataset and one leaderboard to the end | Two through-lines, one switch at ch 10 | Keeps 231n's core and easy visuals early; one deliberate switch, announced and motivated |
+| **R3** (recommended) | Numbers → digits → text. Learn the machinery on things you can see (a line, then handwritten digits, then a small CNN), then switch once to text, and from then on one text dataset and one leaderboard to the end | Two through-lines, one switch at ch 11 | Keeps 231n's core and easy visuals early; one deliberate switch, announced and motivated |
 
-R3 adds a **leaderboard** from ch 10: every new model is scored on the same held-out text
+R3 adds a **leaderboard** from ch 11: every new model is scored on the same held-out text
 (perplexity), so each chapter visibly beats the last. For zh-CN, the text dataset could be
 Chinese, character-level (open question).
 
@@ -86,7 +86,10 @@ Headline options; the recommendation combines several.
 **Recommended:** 1 + 2 + 3 + 4 + 6 + 7, with 5 if a spike shows marimo can do it smoothly,
 and notation introduced in ch 02 (not as late as option 8) once the nudge ratio is familiar.
 
-## Sketch: chapters 01–06 under R3 and the recommended approach
+## Sketch: chapters 01–07 under R3 and the recommended approach
+
+(2026-10-25: a new chapter 04, "Keeping the books", builds the automatic backprop engine, so
+the chapters below from "Many numbers at once" on are one number higher than written.)
 
 To show what "no gaps" means in practice, here is the step sequence.
 
@@ -119,5 +122,8 @@ To show what "no gaps" means in practice, here is the step sequence.
   detour and the first gradient chapters are harder to picture.
 - Gradients: **the recommended combination** (user). Option 8 (no notation until ch 06)
   rejected: readers would meet standard notation too late to connect with other material.
-- Text from ch 10: **the same English text for every language** (user). One dataset and one
+- Text from ch 11: **the same English text for every language** (user). One dataset and one
   set of expected numbers.
+- Chapter 04 is a new chapter, "Keeping the books", for the automatic engine (user, 2026-10-25).
+  Folding it into "Many numbers at once" would have taught two hard new ideas (classes and
+  matrices) in one chapter.
