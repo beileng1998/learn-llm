@@ -28,7 +28,7 @@
   "check.case_blocked": "⏸ {what}: your function uses `{name}`, which isn't finished yet. Finish that exercise first.",
   "error.NameError": "Python doesn't know one of the names you used. Check the spelling; use the names in the parentheses on the `def` line, or give a name a value (like `h = 0.0001`) before using it.",
   "error.UnboundLocalError": "A name was used before it was given a value. Give it a starting value (for example `= 0`) before the loop.",
-  "error.TypeError": "Two things that don't fit together were combined, for example a function's name without `(...)` after it, a whole list added to a number, or `len` given a number instead of a list.",
+  "error.TypeError": "Two things that don't fit together were combined, for example a function's name without `(...)` after it, a whole list added to a number, `len` given a number instead of a list, or a loop over a number (use `range(...)`).",
   "error.ZeroDivisionError": "Something was divided by zero.",
   "ch01.predict.simple": "predict(2, 1, 3) is 2 × 3 + 1 = 7",
   "ch01.predict.mia": "predict(12, -110, 25) is 190",
@@ -61,5 +61,17 @@
   "ch02.slope_f.one": "slope_f(1) is 11",
   "ch02.slope_f.negative": "slope_f(-2) is -7",
   "ch02.slope_f.four": "slope_f(4) is 29",
-  "ch02.slope_f.hint": "Tip: three parts. The slope of 3 × x × x is 3 times the slope of x × x; of 5 × x it is 5; of 2 it is 0. Add them, and write `*` between numbers and x (`6 * x`, not `6x`)."
+  "ch02.slope_f.hint": "Tip: three parts. The slope of 3 × x × x is 3 times the slope of x × x; of 5 × x it is 5; of 2 it is 0. Add them, and write `*` between numbers and x (`6 * x`, not `6x`).",
+  "ch03.day_slopes.day1": "day 1 (t = 14, s = 63) with w = 10, b = -60: slopes (476, 34)",
+  "ch03.day_slopes.day3": "day 3 (t = 20, s = 137): slopes (120, 6), as in your table",
+  "ch03.day_slopes.perfect": "a perfect guess has slopes (0, 0): nothing to blame",
+  "ch03.day_slopes.small": "day_slopes(1, 0, 2, 0): error 2, slopes (8, 4)",
+  "ch03.day_slopes.hint": "Tip: work out p, g and e first, then the blames in backward order, and finish with `return blame_w, blame_b` (two values, w's first).",
+  "ch03.gradient.tiny": "gradient(1, 0, [1, 2], [2, 4]) is the mean of (-2, -2) and (-8, -4): (-5, -3)",
+  "ch03.gradient.mia": "Mia's data at w = 10, b = -60: (-94, 2.5)",
+  "ch03.gradient.perfect": "on a line through every point the gradient is (0, 0)",
+  "ch03.gradient.hint": "Tip: two running totals; inside the loop `dw, db = day_slopes(w, b, t, s)`; after the loop return both totals divided by `len(xs)`.",
+  "ch03.fit.none": "0 steps: the knobs stay at (0, 0)",
+  "ch03.fit.line": "2000 steps with rate 0.1 find the line y = 2x + 1: (2, 1)",
+  "ch03.fit.hint": "Tip: in the loop, `dw, db = gradient(w, b, xs, ys)`, then `w = w - rate * dw` and `b = b - rate * db`; after the loop `return w, b`."
 }

@@ -101,6 +101,7 @@ def _():
 def _(w_here):
     _w = w_here.value
     _before, _after = loss_of_w(_w), loss_of_w(_w + 0.0001)
+    _after2 = loss_of_w(_w + 0.0002)
     _change = _after - _before
     mo.vstack([
         w_here,
@@ -109,6 +110,7 @@ def _(w_here):
 |---|---|---|
 | here | {_w:.4f} | {_before:.4f} |
 | nudged right | {_w + 0.0001:.4f} | {_after:.4f} |
+| nudged twice as far | {_w + 0.0002:.4f} | {_after2:.4f} |
 
 The loss changed by **{_change:+.4f}**: nudging right goes **{"down" if _change < 0 else "up"}hill**,
 so the bottom is to the **{"right" if _change < 0 else "left"}**.
@@ -124,7 +126,8 @@ def _():
 
     The change in the loss tells us the direction. It also tells us how steep the ground is,
     but only once we compare it with the size of the nudge: a nudge twice as big gives a change
-    about twice as big (try it: nudging by 0.0002 instead of 0.0001 roughly doubles the change).
+    about twice as big (look at the last row of the table above: nudging by 0.0002 instead of
+    0.0001 roughly doubles the change).
     The change on its own depends on how big a nudge we chose; the change **per unit** of nudge
     doesn't.
 
@@ -307,6 +310,9 @@ def _():
     Write `descend(f, w, rate, steps)`: start at `w`, and `steps` times: measure the slope of `f`
     at the current `w` with your `nudge_slope`, then use your `step` to replace `w` with the new
     value (`w = step(...)`). After the loop, return `w`. Exercises 1 and 2 come first.
+
+    Store the result in `w` itself, not in a new name like `step` or `slope`: `step` is already
+    the name of your function, and reusing it would hide the function from Python.
     """)
     return
 
@@ -537,10 +543,14 @@ def _():
     - **`c × x`**, like `7 × x`. Nudging gives `7 × (x + h)` = `7 × x + 7 × h`. The change is
       `7 × h`; divide by `h`: the slope is **7**. In numbers at `x = 3`: 7 × 3.0001 − 7 × 3
       = 0.0007, and 0.0007 ÷ 0.0001 = 7. In general, the slope of `c × x` is **c**.
-    - **`x × x`**: slope **2 × x**, from the square picture.
-    - **`c` times a function.** If a function changes by some amount when `x` is nudged, `c` times
-      the function changes by `c` times that amount (multiplying a sum multiplies each part). So
-      its slope is **c times the function's slope**. Example: `4 × x × x` has slope `4 × 2 × x = 8 × x`.
+    - **`x × x`**: slope **2 × x**, from the square picture. (The picture uses lengths, so
+      positive numbers, but the multiplying-out it shows, `(x + h) × (x + h)` = `x × x + 2 × x × h + h × h`,
+      works for any numbers, negative ones too.)
+    - **`c` times a function.** After the nudge, the function's value is its old value plus some
+      change. So `c` times it is `c × (old + change)` = `c × old + c × change`: the change got
+      multiplied by `c`. Dividing by `h` then gives **c times the function's slope**. In numbers,
+      with `c = 4` and `x × x` at `x = 3`: 4 × 3.0001² − 4 × 3² = 4 × 0.00060001 = 0.00240004, and
+      0.00240004 ÷ 0.0001 ≈ 24 = 4 × 6. So `4 × x × x` has slope `4 × 2 × x = 8 × x`.
     - **One function plus another.** If one function rises by 0.3 and the other by 0.5 for the same
       nudge, their sum rises by 0.3 + 0.5 = 0.8: the rises stack. So the slope of a sum is **the two
       slopes added**.
@@ -559,7 +569,8 @@ def _():
     nothing to do with the input called `f` inside `nudge_slope`.) Using the rules, work out its
     slope **on paper** first:
     take each of the three parts, find its slope, add them up. Then write `slope_f(x)` to return
-    that formula. The checks compare it with the right formula; under them, your `nudge_slope`
+    that formula. In Python write `6 * x`, never `6x`: without the `*`, the cell shows a red
+    error instead of the checks. The checks compare it with the right formula; under them, your `nudge_slope`
     measures the same slope as a second opinion.
     """)
     return

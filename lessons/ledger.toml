@@ -31,6 +31,17 @@ uses = [
     "update-variable", "operator-precedence", "chart-reading", "squaring",
 ]
 
+[chapters.03]
+introduces = [
+    "computation-graph", "local-slope", "chain-rule", "blame", "backpropagation",
+    "gradient", "blames-add", "two-sided-product", "return-pair", "gradient-check",
+]
+uses = [
+    "slope", "derivative", "derivative-rules", "expanding-square", "nudge", "mse",
+    "step-rule", "learning-rate", "gradient-descent", "builtin-range", "tuple",
+    "builtin-zip", "update-variable", "function-as-value",
+]
+
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
 error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
@@ -74,3 +85,13 @@ gradient-descent = "repeat: measure the slope, take a step downhill"
 expanding-square = "(x + h) x (x + h) = x x x + 2 x x x h + h x h, seen as a square cut into four pieces"
 derivative = "the exact slope, as the nudge shrinks to nothing; written d/dx; d/dx(x^2) = 2x"
 derivative-rules = "constant: 0; c * x: c; x * x: 2 * x; c * f: c times f's slope; f + g: slopes add"
+computation-graph = "a calculation drawn as boxes (values) and arrows (which values make which), one small step per box"
+local-slope = "for one arrow: how much the result moves per unit nudge of one input, everything else held still"
+chain-rule = "rates along a path multiply, like chaining currency exchange rates"
+blame = "a box's blame: how much the final loss moves per unit this box moves (its slope of the loss)"
+backpropagation = "walk the graph backwards: blame of a box = local slope of its arrow x blame of the box it points to"
+gradient = "the slopes of the loss for all the knobs together"
+blames-add = "when a value feeds several arrows, the blames arriving through each arrow add up"
+two-sided-product = "in a x c, nudging a moves the result by c per unit, nudging c moves it by a"
+return-pair = "return a, b gives back two values; x, y = f(...) catches both"
+gradient-check = "compare a hand-written gradient against nudging"

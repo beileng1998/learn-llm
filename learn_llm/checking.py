@@ -37,6 +37,10 @@ class Result:
 
 
 def _same(got, expected, tolerance) -> bool:
+    if isinstance(expected, tuple):
+        return isinstance(got, tuple) and len(got) == len(expected) and all(
+            _same(g, e, tolerance) for g, e in zip(got, expected)
+        )
     if tolerance and isinstance(got, (int, float)) and isinstance(expected, (int, float)):
         return math.isclose(got, expected, abs_tol=tolerance)
     return got == expected
