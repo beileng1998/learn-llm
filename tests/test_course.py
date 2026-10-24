@@ -158,3 +158,9 @@ def test_engine_mistakes_read_plainly():
     assert all(r.got is None for r in run(exercises("04")["add"], add_without_return))
     parents = run(exercises("04")["square"], square_twice)[2]
     assert "got `[a, a]`, expected `[a]`" in explain(parents, "en")
+
+    def add_boxes_directly(a, b, book):
+        return a + b
+
+    error = run(exercises("04")["add"], add_boxes_directly)[0]
+    assert "`add(x, y, book)`" in explain(error, "en")

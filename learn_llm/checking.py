@@ -91,6 +91,8 @@ def explain(result: Result, locale: str) -> str:
     if result.status == ERROR:
         line = t("check.case_error", locale, what=what, error=result.error)
         hint_key = f"error.{result.error_type}"
+        if "'Value'" in result.error:  # an engine box used where a number was expected (ch04 on)
+            hint_key += ".Value"
         hint = t(hint_key, locale)
         return f"{line} {hint}" if hint != hint_key else line
     if result.got is None:

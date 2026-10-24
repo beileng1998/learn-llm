@@ -233,6 +233,7 @@ def _():
 
     Write `square(a, book)` for `a × a`. It has only **one** parent, `a` (so `out.parents = [a]`),
     and one local slope: chapter 02's slope of `x × x`, which is `2 × x`. Here `x` is `a.data`.
+    (On the keyboard, `×` is `*`: Python doesn't know the `×` sign.)
     """)
     return
 
@@ -271,8 +272,9 @@ def _():
     it on.
 
     Here it is on Mia's day 1 from chapter 03. Recording `p = w × t`, `g = p + b`, `e = g − s`,
-    `L = e × e` writes the book in this order: entry 0 is `p`, then `g`, then `e`, then `L`.
-    Reading it backwards:
+    `L = e × e` writes the book in this order: entry 0 is `p`, then `g`, then `e`, then `L`. With
+    day 1's numbers, `p = 140`, `g = 80`, `e = 17` and `L = 289`, so the local slope of `e × e`
+    is `2 × 17 = 34`. Reading the book backwards:
 
     | step | entry | its blame is complete because… | it passes on |
     |---|---|---|---|
@@ -310,8 +312,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    It says `1`, not `7`. The book holds two entries: first the product (`mul(x3, x3)`, whose
-    parents list is `[x3, x3]`: the **same** box twice, once per side of the `×`), then the total.
+    It says `1`, not `7`. (Below, `x` is the cell's `x3`, the product is `product` and the total
+    is `total3`.) The book holds two entries: first the product (`mul(x3, x3)`, whose parents
+    list is `[x3, x3]`: the **same** box twice, once per side of the `×`), then the total.
     Front to back:
 
     1. The product comes first. Its blame is still 0, because the total hasn't passed it any
@@ -327,14 +330,17 @@ def _():
 
     ## Exercise 4: backward
 
-    Write `backward(loss, book)`. Four lines, each one indented one step further than the line
-    before, because each sits inside the loop above it:
+    Write `backward(loss, book)`. Your four lines replace `todo()`, so they all sit inside the
+    `def`. The first two start at the same place, where `todo()` was. Each of the last two is
+    pushed in one more step than the line above it, because it sits inside that line's loop.
+    Here is the whole function, so you can see where everything goes:
 
     ```python
-    loss.grad = 1
-    for entry in reversed(book):
-        for parent, slope in zip(entry.parents, entry.local_slopes):
-            parent.grad = parent.grad + slope * entry.grad
+    def backward(loss, book):
+        loss.grad = 1
+        for entry in reversed(book):
+            for parent, slope in zip(entry.parents, entry.local_slopes):
+                parent.grad = parent.grad + slope * entry.grad
     ```
 
     It doesn't need to `return` anything: the blames are stored in the boxes themselves.
@@ -402,7 +408,10 @@ def _():
     knobs, computed entirely by the engine. It's chapter 03's `gradient`, but you only write the
     forward calculation:
 
-    1. `book = []`, then the knobs as values: `w = Value(w_num)` and `b = Value(b_num)`.
+    1. `book = []`, then the knobs as values: `w = Value(w_num)` and `b = Value(b_num)`. (`w_num`
+       is a plain number; `w` is the box made from it.) From here on, combine boxes only with
+       `add`, `sub`, `mul` and `square`, never with `+`, `-` or `*`: only those functions write
+       the step in the book.
     2. A running total that is itself a value: `total = Value(0)`.
     3. Loop with `for x, y in zip(xs, ys):`. Inside: `guess = add(mul(w, Value(x), book), b, book)`,
        then `e = sub(guess, Value(y), book)`, then `total = add(total, square(e, book), book)`.
@@ -467,7 +476,7 @@ def _():
     Each box passes on its whole, already-wrong blame, so the mistake grows at every step. That's
     why `engine_gradient` makes **fresh** `Value` boxes, with a fresh book, every
     time it's called: every blame starts at 0. (Real deep-learning tools have the same rule;
-    you'll meet it again with PyTorch.)
+    you'll meet it again later in the course.)
 
     ## The payoff: a new recipe, no new backward steps
 
@@ -509,7 +518,7 @@ def _():
     With raw temperatures, `a` would be multiplied by numbers up to 1521 and `b` by 1: a learning
     rate small enough for `a` would leave `b` almost frozen. Dividing by 10 helps, but every `x`
     is still positive and `x × x` still reaches 15. Subtracting 25 first puts the middle of the
-    temperatures at 0, so `x` runs from about -1 to 1 and `x × x` from 0 to 2. Now all three knobs
+    temperatures at 0, so `x` runs from about -1 to 1.5 and `x × x` from 0 to 2. Now all three knobs
     are multiplied by numbers of similar size (`x × x`, `x`, and 1), and one learning rate suits
     all of them.
 

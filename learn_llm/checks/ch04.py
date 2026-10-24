@@ -38,7 +38,7 @@ def _step(f, *numbers):
     slopes = out.local_slopes
     return (
         out.data,
-        tuple(slopes) if isinstance(slopes, (list, tuple)) else slopes,
+        list(slopes) if isinstance(slopes, (list, tuple)) else slopes,
         _Shown("[" + ", ".join(names.get(id(p), "something else") for p in out.parents) + "]"),
         len(book) == 1 and book[0] is out,
     )
@@ -71,20 +71,20 @@ def _mia_day(backward):
 EXERCISES = {
     "add": [
         Case("ch04.add.value", lambda f: _part(0, f, 3, 4), 7, hint="ch04.op.hint"),
-        Case("ch04.add.slopes", lambda f: _part(1, f, 3, 4), (1, 1), hint="ch04.add.hint"),
-        Case("ch04.op.parents", lambda f: _part(2, f, 3, 4), _Shown("[a, b]"), hint="ch04.op.hint"),
+        Case("ch04.add.slopes", lambda f: _part(1, f, 3, 4), [1, 1], hint="ch04.add.hint"),
+        Case("ch04.op.parents", lambda f: _part(2, f, 3, 4), _Shown("[a, b]"), hint="ch04.parents.hint"),
         Case("ch04.op.book", lambda f: _part(3, f, 3, 4), True, hint="ch04.op.hint"),
     ],
     "sub": [
         Case("ch04.sub.value", lambda f: _part(0, f, 3, 4), -1, hint="ch04.op.hint"),
-        Case("ch04.sub.slopes", lambda f: _part(1, f, 3, 4), (1, -1), hint="ch04.sub.hint"),
-        Case("ch04.op.parents", lambda f: _part(2, f, 3, 4), _Shown("[a, b]"), hint="ch04.op.hint"),
+        Case("ch04.sub.slopes", lambda f: _part(1, f, 3, 4), [1, -1], hint="ch04.sub.hint"),
+        Case("ch04.op.parents", lambda f: _part(2, f, 3, 4), _Shown("[a, b]"), hint="ch04.parents.hint"),
         Case("ch04.op.book", lambda f: _part(3, f, 3, 4), True, hint="ch04.op.hint"),
     ],
     "square": [
         Case("ch04.square.value", lambda f: _part(0, f, -5), 25, hint="ch04.op.hint"),
-        Case("ch04.square.slopes", lambda f: _part(1, f, -5), (-10,), hint="ch04.square.hint"),
-        Case("ch04.square.parents", lambda f: _part(2, f, -5), _Shown("[a]"), hint="ch04.square.hint"),
+        Case("ch04.square.slopes", lambda f: _part(1, f, -5), [-10], hint="ch04.square.hint"),
+        Case("ch04.square.parents", lambda f: _part(2, f, -5), _Shown("[a]"), hint="ch04.parents.hint"),
         Case("ch04.op.book", lambda f: _part(3, f, -5), True, hint="ch04.op.hint"),
     ],
     "backward": [
