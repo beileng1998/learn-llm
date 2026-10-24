@@ -187,7 +187,9 @@ def _():
 
     We could follow a nudge forward from `w`, then again from `b`, and so on for every knob. But
     there's a smarter order. Start at the end and give every box a **blame**: how much `L` moves
-    per unit that this box moves. Then walk backwards, arrow by arrow:
+    per unit that this box moves. Then walk backwards, arrow by arrow. ("Per unit" here is a rate
+    for a tiny nudge, as in chapter 02, not a jump of a whole 1: moving `e` from 17 to 18 would
+    move `L` by 35, the 34 plus the square's leftover.)
 
     - `L` itself: moving `L` by 1 moves `L` by 1. Blame **1**.
     - `e`: one unit of `e` moves `L` by 34 (the local slope), and each unit of `L` is worth 1.
@@ -329,28 +331,28 @@ def _():
     the function catches both the same way: `dw, db = day_slopes(10, -60, 14, 63)` stores 476 in
     `dw` and 34 in `db`. (Like `for t, s in zip(...)`: two names, two values.)
 
-    The comments in the cell list the steps, one box per line. To turn a comment into code,
-    delete the `#` **and the space after it**, so the line starts in the same column as `todo()`.
-    Do that for every line from `p = w * t` to `return blame_w, blame_b`, then delete `todo()`.
-    (Leave the two "one box per line" headings as comments.)
+    The cell lists the steps as comments, one box per line: three forward, then the blames
+    backwards, then the `return`. To turn a comment into code, delete the `#` **and the space
+    after it**, so the line starts in the same column as `todo()`. Do that for every line, then
+    delete `todo()`. (If you see `IndentationError: unexpected indent`, a space after `#` is
+    still there.)
+
+    `L` itself needs no line: its blame is 1, so `blame_e = 2 * e * 1`, which is just `2 * e`.
     """)
     return
 
 
 @app.function
 def day_slopes(w, b, t, s):
-    # Forward, one box per line:
     # p = w * t
     # g = p + b
     # e = g - s
-    # Backward, one box per line:
     # blame_e = 2 * e
     # blame_g = blame_e
     # blame_p = blame_g
     # blame_b = blame_g
     # blame_w = t * blame_p
     # return blame_w, blame_b
-    # ← replace todo() below with your code
     todo()
 
 
@@ -371,7 +373,8 @@ def _():
     1. Two running totals at 0: `total_w = 0` and `total_b = 0`.
     2. Loop over the days with `for t, s in zip(xs, ys):`. Get that day's slopes with
        `dw, db = day_slopes(w, b, t, s)` and add each to its running total.
-    3. After the loop: `return total_w / len(xs), total_b / len(xs)`.
+    3. After the loop (press Backspace so `return` lines up with `for`):
+       `return total_w / len(xs), total_b / len(xs)`.
     """)
     return
 
@@ -420,7 +423,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Each pair matches, up to the nudge's small leftover. For `w` the nudging column is about 0.06
+    Once your exercises pass, each pair matches, up to the nudge's small leftover. For `w` the nudging column is about 0.06
     off: that's the leftover again, here the average of `t × t` over Mia's days (about 603.5)
     times `h = 0.0001`. (If your columns disagree by much more, your checks above will show which
     exercise to look at.)
@@ -428,7 +431,8 @@ def _():
     ## Exercise 4: gradient descent with exact slopes
 
     Write `fit(w, b, xs, ys, rate, steps)`: gradient descent on both knobs, with your exact
-    gradient instead of nudging. Repeat `steps` times:
+    gradient instead of nudging. Repeat `steps` times with `for i in range(steps):`, and inside
+    the loop:
 
     - `dw, db = gradient(w, b, xs, ys)`
     - `w = w - rate * dw` and `b = b - rate * db` (the step rule from chapter 02, once per knob)
