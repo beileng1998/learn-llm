@@ -147,16 +147,18 @@ def _():
     Is it really exact? Look at where a leftover could come from. The first three steps are
     "straight-line" steps (`× 14`, `+ b`, `− s`): for those, the change is **exactly** the rate
     times the nudge, with nothing left over (like `7 × (x + h) = 7 × x + 7 × h` in chapter 02).
-    So `e` moves by exactly `14 × h`. Only the last step, the square, leaves something over:
-    from the square picture, `e × e` grows by `2 × e × (14 × h)` plus the small corner
+    So `e` moves by exactly `14 × h`. Only the last step, the square, leaves something over. Use
+    chapter 02's square picture with side `e = 17`, nudged by `14 × h` instead of `h`: it grows by
+    two strips of `17 × 14 × h` (together `2 × 17 × 14 × h` = `476 × h`) plus the small corner
     `(14 × h) × (14 × h)` = `196 × h × h`. Divide by `h`:
 
     > measured slope = 476 + 196 × h
 
     The same pattern as `2 × x + h` in chapter 02: as the nudge shrinks, the measurements close in
-    on **476**. (If a bending step like the square sat in the middle of a chain instead of at the
-    end, its leftover would also be a tiny amount times `h`; the straight-line steps after it just
-    scale it, so it still vanishes as `h` shrinks.) Check it by nudging:
+    on **476**. (What if a bending step sits in the middle, with a straight-line step after it?
+    Take `3 × (x × x)`. The square leaves a corner `h × h`; the `× 3` afterwards makes it `3 × h × h`;
+    divided by `h` that's `3 × h`, which still vanishes as `h` shrinks. Straight-line steps only
+    scale a leftover, they never stop it vanishing.) Check it by nudging:
     """)
     return
 
@@ -173,8 +175,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Nudging with `h = 0.0001` gives `476.0196`, which is `476 + 196 × 0.0001`: exactly the chain
-    rule's 476, plus the leftover we just predicted. Smaller nudges get closer still:
+    Nudging with `h = 0.0001` gives about `476.0196` (the long tail of digits after that is the
+    computer's rounding noise), which is `476 + 196 × 0.0001`: exactly the chain rule's 476, plus
+    the leftover we just predicted. Smaller nudges get closer still:
 
     | nudge h | 0.1 | 0.01 | 0.001 | 0.0001 |
     |---|---|---|---|---|
@@ -193,6 +196,9 @@ def _():
     - `p`: one unit of `p` moves `g` by 1. Blame 1 × 34 = **34**.
     - `b`: one unit of `b` also moves `g` by 1. Blame 1 × 34 = **34**.
     - `w`: one unit of `w` moves `p` by 14, and each unit of `p` is worth 34. Blame 14 × 34 = **476**.
+
+    (Blames can be negative too. A negative blame means raising that box *lowers* the loss; the
+    step rule's minus then pushes the knob up, which is downhill.)
 
     One rule did all of it:
 
@@ -323,8 +329,10 @@ def _():
     the function catches both the same way: `dw, db = day_slopes(10, -60, 14, 63)` stores 476 in
     `dw` and 34 in `db`. (Like `for t, s in zip(...)`: two names, two values.)
 
-    The comments in the cell list the steps, one box per line. Type each one as real code (no
-    `#` in front), in the order given.
+    The comments in the cell list the steps, one box per line. To turn a comment into code,
+    delete the `#` **and the space after it**, so the line starts in the same column as `todo()`.
+    Do that for every line from `p = w * t` to `return blame_w, blame_b`, then delete `todo()`.
+    (Leave the two "one box per line" headings as comments.)
     """)
     return
 
@@ -332,16 +340,16 @@ def _():
 @app.function
 def day_slopes(w, b, t, s):
     # Forward, one box per line:
-    #   p = w * t
-    #   g = p + b
-    #   e = g - s
+    # p = w * t
+    # g = p + b
+    # e = g - s
     # Backward, one box per line:
-    #   blame_e = 2 * e
-    #   blame_g = blame_e
-    #   blame_p = blame_g
-    #   blame_b = blame_g
-    #   blame_w = t * blame_p
-    # Then: return blame_w, blame_b
+    # blame_e = 2 * e
+    # blame_g = blame_e
+    # blame_p = blame_g
+    # blame_b = blame_g
+    # blame_w = t * blame_p
+    # return blame_w, blame_b
     # ← replace todo() below with your code
     todo()
 
@@ -412,8 +420,10 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Each pair matches, up to the nudge's small leftover. (If your columns disagree, your checks
-    above will show which exercise to look at.)
+    Each pair matches, up to the nudge's small leftover. For `w` the nudging column is about 0.06
+    off: that's the leftover again, here the average of `t × t` over Mia's days (about 603.5)
+    times `h = 0.0001`. (If your columns disagree by much more, your checks above will show which
+    exercise to look at.)
 
     ## Exercise 4: gradient descent with exact slopes
 
@@ -476,7 +486,7 @@ def _(race):
         _out = mo.md(f"""
 | | nudging | backpropagation |
 |---|---|---|
-| loss calculations per step | 4 (2 per knob) | none extra: one forward + backward pass |
+| loss calculations per step | 4 (2 per knob) | about 1 (one forward + backward pass) |
 | time | {_t_nudge:.2f} s | {_t_back:.2f} s |
 | final w, b | {_w:.2f}, {_b:.1f} | {_fw:.2f}, {_fb:.1f} |
 | final loss | {mse(_w, _b, temps, sales):.1f} | {mse(_fw, _fb, temps, sales):.1f} |
