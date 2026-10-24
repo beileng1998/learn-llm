@@ -27,3 +27,8 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | starting height (b) | 起始高度 | 01 |
 | x-axis / y-axis | 横轴 / 纵轴 | 01 |
 | training | 训练 | 02 |
+| knob (informal for parameter) | 旋钮 | 01 |
+| nudge | 微调 | 02 |
+| slope | 斜率 | 02 |
+| learning rate | 学习率 | 02 |
+| gradient descent | 梯度下降 | 02 |

@@ -123,11 +123,15 @@ def _():
     ## How steep? The slope
 
     The change in the loss tells us the direction. It also tells us how steep the ground is,
-    once we compare it with the size of the nudge.
+    but only once we compare it with the size of the nudge: a nudge twice as big gives a change
+    about twice as big (try it: nudging by 0.0002 instead of 0.0001 roughly doubles the change).
+    The change on its own depends on how big a nudge we chose; the change **per unit** of nudge
+    doesn't.
 
-    /// admonition | 🧰 Toolbox: a rate
-    A **rate** compares two changes by dividing one by the other. If 3 kg of apples cost 6 euros,
-    the price is 6 ÷ 3 = 2 euros **per** kg. Dividing tells you "how much of this per one of that".
+    /// admonition | 🧰 Toolbox: "per", dividing two changes
+    Dividing one amount by another tells you "how much of this **per** one of that". If 3 kg of
+    apples cost 6 euros, the price is 6 ÷ 3 = 2 euros **per** kg. Buy twice as much and you pay
+    twice as much, but the price per kg stays 2.
     ///
 
     Here we divide the change in the loss by the change in `w` (the nudge):
@@ -138,6 +142,9 @@ def _():
     stand. It's the same idea as the steepness `w` of Mia's line in chapter 01: there, `w` said
     how many more ice creams per extra degree; here, the slope says how much more loss per
     extra unit of `w`.
+
+    (Short notation you'll see from here on: `x²` means `x × x`, in Python `x ** 2`; and `2x`
+    means `2 × x`. Maths books leave out the × sign; in Python you must always write `*`.)
 
     Read the slope like this:
 
@@ -243,7 +250,7 @@ def _():
 
     > new w = w − rate × slope
 
-    Why a **minus**? Because the slope points uphill. Check all the cases:
+    In Python: `w - rate * slope`. Why a **minus**? Check all the cases:
 
     | slope | means | − rate × slope | so w... |
     |---|---|---|---|
@@ -251,17 +258,23 @@ def _():
     | positive (e.g. +2000) | downhill is to the left | negative | shrinks: moves left ✓ |
     | near 0 | almost at the bottom | near 0 | barely moves ✓ |
 
+    In every case, the sign of the slope tells you which side is uphill, and the minus sends `w`
+    the opposite way: downhill.
+
     Why multiply by the slope instead of always stepping the same amount? Far from the bottom
     the ground is steep, so the step is big; near the bottom it's flat, so steps get small by
     themselves and the walk slows down as it arrives.
 
-    The **rate**, called the **learning rate**, is a small number you choose that sets how big
-    the steps are overall. Mia's loss values are in the thousands, so the learning rate has to
-    be tiny, like `0.0008`.
+    The **learning rate** (`rate` in the code) is a small number you choose that sets how big the
+    steps are overall. It has nothing to do with the "per" division above; it's just the name
+    everyone uses. Here, the slopes are in the thousands (about −2,400 at `w = 10`), so the learning
+    rate has to be tiny, like `0.0008`, or a single step would fly far past the valley.
 
     ## Exercise 2: one step
 
-    Write `step(w, slope, rate)`: it gives back the new `w` after one step downhill.
+    Write `step(w, slope, rate)`: it gives back the new `w` after one step downhill. Type the
+    Python form, `w - rate * slope`, with `-` and `*` from the keyboard; the `−` and `×` in the
+    rule above are maths symbols that Python doesn't accept.
     """)
     return
 
@@ -404,8 +417,10 @@ def _(steps_choice):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The computer finds Mia's line by itself: after 20,000 steps the loss is close to the best
-    possible (about 27). Nobody dragged a slider.
+    The computer finds Mia's line by itself: after 20,000 steps the loss is about 31, close to
+    the best possible (about 27). Nobody dragged a slider. (The one-knob walk above got lower
+    because we'd already handed it a good `b = -108`; here the computer had to find `b` too,
+    starting from 0.)
 
     You may notice `b` creeps along much more slowly than `w`. The loss reacts far more strongly
     to `w` (every degree multiplies it) than to `b`, so a learning rate that is safe for `w` is
@@ -464,12 +479,25 @@ def _():
 
     > slope = (2 × x × h + h × h) ÷ h = 2 × x + h
 
-    (Each piece had an `h` in it, so dividing by `h` removes one `h` from each.)
+    Dividing a sum divides each part: (6 + 4) ÷ 2 = 3 + 2. Each part here has an `h` in it, so
+    dividing by `h` removes one `h` from each: `2 × x × h ÷ h` is `2 × x`, and `h × h ÷ h` is `h`.
 
-    Now make the nudge smaller and smaller: `h = 0.1`, `0.001`, `0.0000001`... The `2 × x` part
-    stays put, while the leftover `+ h` shrinks towards nothing. In the end, the slope of `x × x` is
-    exactly **`2 × x`**. At `x = 3` that's `6`. Check it against your `nudge_slope`, which still has
-    its small `h` left over:
+    So the measured slope is always `2 × x + h`: the true steepness plus a small extra that comes
+    from the nudge's own size. Watch what happens at `x = 3` as the nudge shrinks:
+
+    | nudge h | measured slope 2 × 3 + h |
+    |---|---|
+    | 0.1 | 6.1 |
+    | 0.01 | 6.01 |
+    | 0.001 | 6.001 |
+    | 0.0001 | 6.0001 |
+
+    We can't simply set `h = 0`: the change would be 0 and we'd be dividing 0 by 0, which means
+    nothing. But the measurements clearly **close in** on one number, 6, getting as close as we
+    like when `h` is small enough. That number is what we call the **exact** slope. Since the
+    measured slope is always `2 × x + h`, the number it closes in on is **`2 × x`**.
+
+    Check it against your `nudge_slope`, which still carries its `h = 0.0001`:
     """)
     return
 
@@ -500,23 +528,36 @@ def _():
 
     ## More rules, the same way
 
-    Every rule below comes from nudging, just like `x²` did. For each, think about what a nudge `h`
-    does to the value:
+    Every rule below comes from nudging, just like `x²` did. One fact about multiplication first:
+    **multiplying a sum multiplies each part**. Seven bags of (3 apples + 2 pears) hold 7 × 3 apples
+    and 7 × 2 pears: 7 × (3 + 2) = 7 × 3 + 7 × 2 = 35.
 
-    | function | nudging x by h changes it by | so the slope is |
-    |---|---|---|
-    | a constant, like `5` | nothing: 0 | **0** |
-    | `c × x`, like `7 × x` | `c × h` | **c** |
-    | `x × x` | `2 × x × h + h × h` | **2 × x** |
-    | `c` times some function | `c` times that function's change | **c times its slope** |
-    | one function plus another | the two changes added up | **the two slopes added** |
+    - **A constant**, like `5`. It doesn't depend on `x` at all: nudging `x` changes nothing.
+      Change 0, so the slope is **0**.
+    - **`c × x`**, like `7 × x`. Nudging gives `7 × (x + h)` = `7 × x + 7 × h`. The change is
+      `7 × h`; divide by `h`: the slope is **7**. In numbers at `x = 3`: 7 × 3.0001 − 7 × 3
+      = 0.0007, and 0.0007 ÷ 0.0001 = 7. In general, the slope of `c × x` is **c**.
+    - **`x × x`**: slope **2 × x**, from the square picture.
+    - **`c` times a function.** If a function changes by some amount when `x` is nudged, `c` times
+      the function changes by `c` times that amount (multiplying a sum multiplies each part). So
+      its slope is **c times the function's slope**. Example: `4 × x × x` has slope `4 × 2 × x = 8 × x`.
+    - **One function plus another.** If one function rises by 0.3 and the other by 0.5 for the same
+      nudge, their sum rises by 0.3 + 0.5 = 0.8: the rises stack. So the slope of a sum is **the two
+      slopes added**.
 
-    The last two let you combine the others. For example, the slope of `4 × x × x` is `4` times
-    the slope of `x × x`, so `4 × 2 × x = 8 × x`.
+    | function | slope |
+    |---|---|
+    | a constant | 0 |
+    | `c × x` | c |
+    | `x × x` | 2 × x |
+    | `c` × a function | c × that function's slope |
+    | a function + another | the two slopes added |
 
     ## Exercise 4: an exact slope
 
-    Take `f(x) = 3 × x × x + 5 × x + 2`. Using the rules, work out its slope **on paper** first:
+    Take `f(x) = 3 × x × x + 5 × x + 2`. (This `f` is a new function with its own name; it has
+    nothing to do with the input called `f` inside `nudge_slope`.) Using the rules, work out its
+    slope **on paper** first:
     take each of the three parts, find its slope, add them up. Then write `slope_f(x)` to return
     that formula. The checks compare it with the right formula; under them, your `nudge_slope`
     measures the same slope as a second opinion.
