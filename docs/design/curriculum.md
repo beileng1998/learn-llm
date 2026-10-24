@@ -1,7 +1,8 @@
-# Curriculum design (DRAFT for discussion)
+# Curriculum design
 
-Tier 2, Track A. Status: options for the maintainer to react to; nothing here is decided
-until it moves into SCOPE.md.
+Tier 2, Track A. Status: decided 2026-10-24: route R3, the recommended gradient
+combination, and the same English text for every language from ch 10. Decisions live in
+SCOPE.md; this file keeps the reasoning and the rejected options.
 
 ## Brief
 
@@ -112,8 +113,11 @@ To show what "no gaps" means in practice, here is the step sequence.
 - **06 Neural networks.** Why a straight line can't bend; ReLU. Matrix backprop derived one
   entry at a time (option 6). The learner's ch 03 engine and the matrix version must agree.
 
-## Open questions for the maintainer
+## Decisions
 
-- Route: R1, R2 or R3?
-- Gradient teaching: the recommended combination, or more/less radical (option 8)?
-- zh-CN through-line dataset: Chinese text, or the same English text for both languages?
+- Route: **R3** (user). R1 rejected: restarts between parts. R2 rejected: vision shrinks to a
+  detour and the first gradient chapters are harder to picture.
+- Gradients: **the recommended combination** (user). Option 8 (no notation until ch 06)
+  rejected: readers would meet standard notation too late to connect with other material.
+- Text from ch 10: **the same English text for every language** (user). One dataset and one
+  set of expected numbers.

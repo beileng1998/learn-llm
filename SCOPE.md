@@ -113,5 +113,13 @@ On a fresh clone, on Ubuntu and macOS CI runners with no GPU:
 
 - Installer: uv (pinned version) behind `start.sh` / `make start`; Windows uses `start.cmd` → `start.ps1` (user, 2026-10-24)
 
+- Route: R3, numbers → digits → text, with one text dataset and one perplexity leaderboard
+  from ch 10 to the end (user, 2026-10-24; see docs/design/curriculum.md)
+- Gradients/backprop: nudge experiment → rules earned by nudge algebra → chain rule as
+  exchange rates → hand-filled tables → autograd code; matrix gradients one entry at a time;
+  every gradient auto-checked against nudging; d/dx notation from ch 02 (user, 2026-10-24)
+- Text dataset from ch 10: the same English text for every language edition (user, 2026-10-24)
+- Every chapter passes the novice-review gate (docs/design/novice-review.md) with zero blockers
+
 ## Open decisions
 - (none)
