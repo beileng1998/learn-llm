@@ -19,4 +19,11 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | derivative | 导数 | 02 |
 | loss | 损失 | 01 |
 | model | 模型 | 01 |
-| training | 训练 | 01 |
+| parameter | 参数 | 01 |
+| error | 误差 | 01 |
+| squared error | 平方误差 | 01 |
+| mean squared error (MSE) | 均方误差 | 01 |
+| steepness (w) | 陡度 | 01 |
+| starting height (b) | 起始高度 | 01 |
+| x-axis / y-axis | 横轴 / 纵轴 | 01 |
+| training | 训练 | 02 |

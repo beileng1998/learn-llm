@@ -9,6 +9,13 @@ introduces = [
 ]
 uses = []
 
+[chapters.01]
+introduces = [
+    "builtin-zip", "tuple", "builtin-print", "chart-reading", "model", "parameter",
+    "line", "error", "squaring", "loss", "mse",
+]
+uses = ["list", "loop", "function", "call", "return", "mean", "power", "builtin-len"]
+
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
 error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
@@ -29,3 +36,14 @@ loop = "for item in list: runs the indented lines once per value"
 if = "if condition: runs the indented lines only when the condition is true"
 comparison = "a > b, a < b give true or false"
 mean = "the average: total divided by how many values"
+builtin-zip = "zip(xs, ys) pairs up two lists position by position"
+tuple = "for a, b in ...: takes two values at a time, one for each name"
+builtin-print = "print(...) shows values as text under the cell, every time it runs"
+chart-reading = "x-axis (bottom) measures the first number, y-axis (left) the second; each dot is one pair"
+model = "a recipe with adjustable numbers that turns an input into a guess"
+parameter = "a model's adjustable numbers (its knobs); learning means finding good values for them"
+line = "guess = w * x + b: w is the steepness, b the starting height (the guess at x = 0)"
+error = "guess minus truth; positive means too high, negative too low"
+squaring = "a number times itself; never negative, and big numbers grow much bigger"
+loss = "a number measuring how wrong a model is; lower is better"
+mse = "mean squared error: the average of the squared errors over all examples"

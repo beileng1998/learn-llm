@@ -19,7 +19,7 @@ def main(argv=None) -> int:
     parser.add_argument("--lessons", action="store_true", help="check lessons/ even if my-work/ exists")
     args = parser.parse_args(argv)
 
-    base = LESSONS if args.lessons or not WORK.exists() else WORK
+    base = LESSONS if args.lessons or args.solutions or not WORK.exists() else WORK
     targets = []  # (label, chapter number, path)
     for locale in [SOURCE_LOCALE] if args.solutions else LOCALES:
         for ch in chapters(locale, base):

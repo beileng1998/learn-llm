@@ -29,5 +29,16 @@
   "error.NameError": "Python doesn't know one of the names you used. Check the spelling, and use the name in the parentheses on the `def` line (for example `celsius`).",
   "error.UnboundLocalError": "A name was used before it was given a value. Give it a starting value (for example `= 0`) before the loop.",
   "error.TypeError": "Two things that don't fit together were combined, for example a function's name without `(...)` after it, a whole list added to a number, or `len` given a number instead of a list.",
-  "error.ZeroDivisionError": "Something was divided by zero."
+  "error.ZeroDivisionError": "Something was divided by zero.",
+  "ch01.predict.simple": "predict(2, 1, 3) is 2 × 3 + 1 = 7",
+  "ch01.predict.mia": "predict(12, -110, 25) is 190",
+  "ch01.predict.flat": "with w = 0 the line is flat: predict(0, 5, 100) is 5",
+  "ch01.predict.order": "at x = 0 the guess is just b: predict(3, 10, 0) is 10",
+  "ch01.squared_error.over": "guess 10, truth 7: error 3, squared 9",
+  "ch01.squared_error.under": "guess 7, truth 10: error -3, squared still 9",
+  "ch01.squared_error.exact": "a perfect guess has squared error 0",
+  "ch01.squared_error.big": "guess 20, truth 10: error 10, squared 100",
+  "ch01.mse.tiny": "mse(1, 0, [1, 2], [1, 4]): squared errors 0 and 4, mean 2",
+  "ch01.mse.perfect": "a line through every point has loss 0",
+  "ch01.mse.mia": "Mia's data with w = 12, b = -110 has loss 28.5"
 }
