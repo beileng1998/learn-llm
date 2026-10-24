@@ -128,3 +128,13 @@ def test_concept_ledger_has_no_gaps():
     from learn_llm.ledger import problems
 
     assert problems() == []
+
+
+def test_a_list_counts_as_a_pair():
+    cases = exercises("03")["day_slopes"]
+
+    def as_list(w, b, t, s):
+        e = w * t + b - s
+        return [2 * e * t, 2 * e]
+
+    assert {r.status for r in run(cases, as_list)} == {"pass"}

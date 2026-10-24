@@ -70,8 +70,8 @@
   "ch03.gradient.tiny": "gradient(1, 0, [1, 2], [2, 4]) is the mean of (-2, -2) and (-8, -4): (-5, -3)",
   "ch03.gradient.mia": "Mia's data at w = 10, b = -60: (-94, 2.5)",
   "ch03.gradient.perfect": "on a line through every point the gradient is (0, 0)",
-  "ch03.gradient.hint": "Tip: two running totals; inside the loop `dw, db = day_slopes(w, b, t, s)`; after the loop return both totals divided by `len(xs)`.",
+  "ch03.gradient.hint": "Tip: two running totals that grow, `total_w = total_w + dw` (not `total_w = dw`); inside the loop `dw, db = day_slopes(w, b, t, s)`; `return` goes after the loop, back at 4 spaces.",
   "ch03.fit.none": "0 steps: the knobs stay at (0, 0)",
   "ch03.fit.line": "2000 steps with rate 0.1 find the line y = 2x + 1: (2, 1)",
-  "ch03.fit.hint": "Tip: in the loop, `dw, db = gradient(w, b, xs, ys)`, then `w = w - rate * dw` and `b = b - rate * db`; after the loop `return w, b`."
+  "ch03.fit.hint": "Tip: repeat with `for i in range(steps):`; inside, `dw, db = gradient(w, b, xs, ys)`, then `w = w - rate * dw` and `b = b - rate * db`; after the loop `return w, b`."
 }

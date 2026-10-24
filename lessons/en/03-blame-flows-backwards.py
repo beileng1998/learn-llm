@@ -23,7 +23,7 @@ def _():
     mo.md(r"""
     # 03 · Blame flows backwards
 
-    Chapter 02 ended with a gap. Mia's loss is built from pieces like `(w × 14 + b − 63)²`:
+    Chapter 02 ended with a gap. Mia's loss is built from pieces like `(w × 14 + b − 63)²` (the `²` means "times itself"):
     a square of something that itself depends on `w`. Our slope rules don't cover that yet. In
     this chapter you'll find the exact slope of anything built from small steps, and you'll see
     the idea that trains every neural network, including the language models at the end of this
@@ -66,18 +66,19 @@ def _():
 
     Take Mia's first day: `t = 14` degrees, `s = 63` ice creams sold. Take the line with knobs
     `w = 10` and `b = -60`. The squared error for that day is worked out in four small steps.
-    Each step does **one** thing, and gives its result a name:
+    Each step does **one** thing, and gives its result a name. (In the code, the names end in `1`
+    for "day 1"; in the text and pictures we just say `p`, `g`, `e`, `L`.)
     """)
     return
 
 
 @app.cell
 def _():
-    p = 10 * 14       # p = w × t: the steepness part of the guess
-    g = p + (-60)     # g = p + b: the guess
-    e = g - 63        # e = g − s: the error
-    L = e * e         # L = e × e: the squared error
-    p, g, e, L
+    p1 = 10 * 14      # p = w × t: the steepness part of the guess
+    g1 = p1 + (-60)   # g = p + b: the guess
+    e1 = g1 - 63      # e = g − s: the error
+    L1 = e1 * e1      # L = e × e: the squared error
+    p1, g1, e1, L1
     return
 
 
@@ -137,7 +138,7 @@ def _():
     | `p` | `14 × h` (rate 14) |
     | `g` | `1 × 14 × h` = `14 × h` (rate 1) |
     | `e` | `1 × 14 × h` = `14 × h` (rate 1) |
-    | `L` | `34 × 14 × h` = `476 × h` (rate 34) |
+    | `L` | about `34 × 14 × h` = `476 × h` (rate 34; the tiny leftover is explained below) |
 
     So `L` moves 476 times as much as `w`: the slope of `L` with respect to `w` is
     **14 × 1 × 1 × 34 = 476**. Multiplying local slopes along the path is called the
@@ -153,7 +154,9 @@ def _():
     > measured slope = 476 + 196 × h
 
     The same pattern as `2 × x + h` in chapter 02: as the nudge shrinks, the measurements close in
-    on **476**. Check it by nudging:
+    on **476**. (If a bending step like the square sat in the middle of a chain instead of at the
+    end, its leftover would also be a tiny amount times `h`; the straight-line steps after it just
+    scale it, so it still vanishes as `h` shrinks.) Check it by nudging:
     """)
     return
 
@@ -210,14 +213,17 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The blame of `w` is its slope, 476, the same as the chain rule's answer. The blame of `b` is
+    The blame of `w` is its slope, 476, the same as the chain rule's answer. That's no coincidence:
+    forwards we multiplied 14 × 1 × 1 × 34, backwards 34 × 1 × 1 × 14, the same numbers in the
+    other order, and the order of a multiplication doesn't change its result. The blame of `b` is
     its slope, 34. This backward walk is called **backpropagation**: the blame for the loss flows
     backwards through the graph to every knob.
 
     Why backwards? Notice that `w` and `b` share the end of the path (`g` → `e` → `L`). Going
-    backwards, that shared part is worked out **once**, and every knob reuses it. A model with a
-    billion knobs gets all billion slopes from one backward walk, which costs about as much as
-    working out the loss once. Compare that with nudging: one extra loss per knob.
+    backwards, that shared part is worked out **once**, and every knob reuses it. The backward walk
+    visits each box once, one multiplication per arrow, just like the forward walk does. So a model
+    with a billion knobs gets all billion slopes for about the cost of working out the loss once
+    more. Compare that with nudging: two loss calculations for **every** knob.
 
     The slopes of the loss for all the knobs together are called the **gradient**. That's where
     *gradient descent*, the walk downhill from chapter 02, gets its name.
@@ -250,7 +256,7 @@ def _(hand):
         "blame g": "local slope 1, times the blame of e",
         "blame p": "local slope 1, times the blame of g",
         "blame b": "local slope 1, times the blame of g",
-        "blame w": "local slope t, times the blame of p",
+        "blame w": "local slope t (here 20), times the blame of p",
     }
     _lines = []
     for _name, _right in _answers.items():
@@ -279,19 +285,28 @@ def _():
     mo.md(r"""
     ## When a value is used twice, blames add
 
-    One more case. In a step like `a × c`, where **both** sides are values that can move: nudging
-    `a` (holding `c` still) moves the result by `c` per unit, and nudging `c` (holding `a` still)
-    moves it by `a` per unit. That's the `c × x` rule from chapter 02, used once for each side.
+    One more case. Take a step `a × c` where **both** sides are values that can move. Nudging only
+    `a` (holding `c` still) moves the result by `c` per unit; nudging only `c` moves it by `a` per
+    unit. That's the `c × x` rule from chapter 02, once for each side.
 
-    Now take `x × x`: the **same** box feeds both sides. A nudge of `x` travels down both arrows at
-    once, and both effects land on the result. When two changes land on the same value they
-    simply add up (the "one function plus another" rule), so:
+    What if both sides move at the same time, each by `h`? Picture a rectangle with sides `a` and
+    `c`, like chapter 02's square. Growing both sides by `h` adds a strip `c × h` along one side, a
+    strip `a × h` along the other, and a tiny corner `h × h`:
 
-    > blame of x = (blame through the first arrow) + (blame through the second arrow)
-    > = x + x = **2 × x**
+    > (a + h) × (c + h) = a × c + **c × h** + **a × h** + h × h
 
-    That is exactly the slope of `x × x` you derived from the square picture in chapter 02,
-    reached a completely different way. Two methods, one answer: a good sign the rules are right.
+    The strip `c × h` is the effect through the first arrow (from `a`), and `a × h` is the effect
+    through the second arrow (from `c`). They sit side by side in the total, so they **add**. The
+    corner `h × h` is the usual leftover that vanishes as `h` shrinks.
+
+    Now take `x × x`: the **same** box feeds both sides, so `a` and `c` are both `x` and both move
+    together. The rule gives:
+
+    > blame of x = (through the first arrow) + (through the second arrow) = x + x = **2 × x**
+
+    That's exactly the slope of `x × x` from chapter 02, as it must be: with `a = c = x`, this
+    rectangle *is* chapter 02's square. The general rule: when a value feeds several arrows, the
+    blames arriving through each of them add up.
 
     The same thing happens in Mia's full loss. The loss is the **mean** over 8 days, and `w` is
     used on every day. So `w` collects blame from all 8 days, added up, then divided by 8 (the
@@ -308,17 +323,25 @@ def _():
     the function catches both the same way: `dw, db = day_slopes(10, -60, 14, 63)` stores 476 in
     `dw` and 34 in `db`. (Like `for t, s in zip(...)`: two names, two values.)
 
-    The comments in the cell list the steps. Each line is one box.
+    The comments in the cell list the steps, one box per line. Type each one as real code (no
+    `#` in front), in the order given.
     """)
     return
 
 
 @app.function
 def day_slopes(w, b, t, s):
-    # Forward:  p = w * t,  g = p + b,  e = g - s
-    # Backward: blame_e = 2 * e,  blame_g = blame_e,  blame_p = blame_g,
-    #           blame_b = blame_g,  blame_w = t * blame_p
-    # Then:     return blame_w, blame_b
+    # Forward, one box per line:
+    #   p = w * t
+    #   g = p + b
+    #   e = g - s
+    # Backward, one box per line:
+    #   blame_e = 2 * e
+    #   blame_g = blame_e
+    #   blame_p = blame_g
+    #   blame_b = blame_g
+    #   blame_w = t * blame_p
+    # Then: return blame_w, blame_b
     # ← replace todo() below with your code
     todo()
 
@@ -453,7 +476,7 @@ def _(race):
         _out = mo.md(f"""
 | | nudging | backpropagation |
 |---|---|---|
-| loss calculations per step | 4 (2 per knob) | 0 (one forward + backward pass instead) |
+| loss calculations per step | 4 (2 per knob) | none extra: one forward + backward pass |
 | time | {_t_nudge:.2f} s | {_t_back:.2f} s |
 | final w, b | {_w:.2f}, {_b:.1f} | {_fw:.2f}, {_fb:.1f} |
 | final loss | {mse(_w, _b, temps, sales):.1f} | {mse(_fw, _fb, temps, sales):.1f} |

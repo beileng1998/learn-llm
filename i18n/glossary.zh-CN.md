@@ -32,3 +32,11 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | slope | 斜率 | 02 |
 | learning rate | 学习率 | 02 |
 | gradient descent | 梯度下降 | 02 |
+| computation graph | 计算图 | 03 |
+| local slope | 局部斜率 | 03 |
+| chain rule | 链式法则 | 03 |
+| blame | 责任 | 03 |
+| backpropagation | 反向传播 | 03 |
+| gradient check | 梯度检查 | 03 |
+| step rule | 步进规则 | 02 |
+| mean loss | 平均损失 | 01 |
