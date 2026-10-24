@@ -1,0 +1,30 @@
+{
+  "check.all_pass": "All checks pass. Well done!",
+  "check.not_started": "Not started yet: replace the todo() line with your code.",
+  "check.some_pass": "{n} of {total} checks pass. Keep going!",
+  "check.case_pass": "✅ {what}",
+  "check.case_todo": "⬜ {what}: not written yet",
+  "check.case_none": "❌ {what}: your function gave back nothing (None). Did you forget `return`?",
+  "check.case_error": "❌ {what}: your code stopped with an error: `{error}`",
+  "check.case_fail": "❌ {what}: got `{got}`, expected `{expected}`",
+
+  "home.title": "learn-llm",
+  "home.language": "Language",
+  "home.chapters": "Chapters",
+  "home.done": "done",
+  "home.in_progress": "in progress",
+  "home.not_started": "not started",
+  "home.fallback": "(not translated yet, shown in English)",
+
+  "ch00.to_fahrenheit.freezing": "0 °C (water freezes) is 32 °F",
+  "ch00.to_fahrenheit.boiling": "100 °C (water boils) is 212 °F",
+  "ch00.to_fahrenheit.negative": "-40 °C is also -40 °F",
+  "ch00.to_fahrenheit.body": "37 °C (body temperature) is 98.6 °F",
+  "ch00.total.small": "total([1, 2, 3]) is 6",
+  "ch00.total.single": "a list with one number: total([5]) is 5",
+  "ch00.total.empty": "an empty list adds up to 0",
+  "ch00.total.negative": "negative numbers work too: total([4, -1, -3]) is 0",
+  "ch00.average.small": "average([1, 2, 3]) is 2",
+  "ch00.average.fraction": "average([1, 2]) is 1.5",
+  "ch00.average.single": "average([7]) is 7"
+}

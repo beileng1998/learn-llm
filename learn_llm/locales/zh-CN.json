@@ -1,0 +1,30 @@
+{
+  "check.all_pass": "全部检查通过，干得好！",
+  "check.not_started": "还没开始：把 todo() 这一行换成你自己的代码。",
+  "check.some_pass": "{total} 项检查中通过了 {n} 项，继续加油！",
+  "check.case_pass": "✅ {what}",
+  "check.case_todo": "⬜ {what}：还没写",
+  "check.case_none": "❌ {what}：你的函数什么也没返回（None）。是不是忘了写 `return`？",
+  "check.case_error": "❌ {what}：代码运行时出错了：`{error}`",
+  "check.case_fail": "❌ {what}：得到 `{got}`，应该是 `{expected}`",
+
+  "home.title": "learn-llm",
+  "home.language": "语言",
+  "home.chapters": "章节",
+  "home.done": "已完成",
+  "home.in_progress": "进行中",
+  "home.not_started": "未开始",
+  "home.fallback": "（尚未翻译，显示英文版）",
+
+  "ch00.to_fahrenheit.freezing": "0 °C（水结冰）等于 32 °F",
+  "ch00.to_fahrenheit.boiling": "100 °C（水沸腾）等于 212 °F",
+  "ch00.to_fahrenheit.negative": "-40 °C 恰好也是 -40 °F",
+  "ch00.to_fahrenheit.body": "37 °C（体温）等于 98.6 °F",
+  "ch00.total.small": "total([1, 2, 3]) 等于 6",
+  "ch00.total.single": "只有一个数的列表：total([5]) 等于 5",
+  "ch00.total.empty": "空列表加起来是 0",
+  "ch00.total.negative": "负数也要能处理：total([4, -1, -3]) 等于 0",
+  "ch00.average.small": "average([1, 2, 3]) 等于 2",
+  "ch00.average.fraction": "average([1, 2]) 等于 1.5",
+  "ch00.average.single": "average([7]) 等于 7"
+}

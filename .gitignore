@@ -1,0 +1,6 @@
+.claude/*.local.*
+CLAUDE.local.md
+.venv/
+__pycache__/
+# Each learner's own copies of the lessons (made by the start script)
+my-work/

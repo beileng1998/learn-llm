@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # No uv set up here on purpose: start.sh must install it on a fresh machine.
+      - name: Start the course from scratch (acceptance 1)
+        run: ./start.sh --smoke
+      - run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Reference solutions pass (acceptance 2)
+        run: uv run --frozen python -m learn_llm.grade --solutions
+      - name: Untouched exercises fail (acceptance 3)
+        run: "! uv run --frozen python -m learn_llm.grade --lessons"
+      - name: Tests, links, translations (acceptance 4, 5)
+        run: uv run --locked pytest -q
+
+  windows-start:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Start the course from scratch
+        shell: pwsh
+        run: ./start.ps1 --smoke
