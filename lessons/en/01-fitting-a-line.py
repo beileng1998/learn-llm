@@ -173,7 +173,8 @@ def _():
     By eye, some lines are clearly better than others. To let a computer compare them, we need
     a **number** that says how wrong a line is.
 
-    Start with one day. The **error** is the guess minus the truth:
+    Start with one day. The **error** is the guess minus the truth. (A different meaning from
+    chapter 00's red error box: here it's a number saying how far off a guess is.)
 
     - guess 150, truth 137: error = 150 − 137 = **13** (guessed 13 too many)
     - guess 120, truth 137: error = 120 − 137 = **−17** (guessed 17 too few)
@@ -268,8 +269,9 @@ def _():
     1. Start a running total at 0: `running = 0`.
     2. Loop over the pairs with `for x, y in zip(xs, ys):`. For each pair, use your `predict`
        to get the guess, and your `squared_error` to compare it with `y`. Add the result to
-       the running total the way chapter 00 counted with `big = big + 1`:
-       `running = running + ...`. Python works out the right side first, using the old
+       the running total the way chapter 00 counted with `big = big + 1`. It's easiest in two
+       lines: first `guess = predict(w, b, x)`, then add `squared_error(guess, y)` to
+       the running total: `running = running + ...`. Python works out the right side first, using the old
        `running`, then stores the result back in `running`.
     3. After the loop, return the running total divided by how many pairs there are
        (`len(xs)`).
@@ -299,10 +301,17 @@ def _():
     Now use your loss as a scoreboard. Move the sliders to make the loss as small as you can.
     Get it **below 100** and Mia can trust your line.
 
-    A strategy that works: first set `w` so the line is about as steep as the row of dots.
-    Then move `b` until the line runs through the middle of the dots. Then try `w` one notch
-    up or down, and fix `b` again. For fine control, click a slider and use the **arrow keys**:
-    each press moves it one notch.
+    A strategy that works:
+
+    1. Estimate the steepness from the data: the dots rise from 63 to 288 (225 more ice creams)
+       while the temperature goes from 14 to 33 (19 degrees warmer). That's about 225 ÷ 19 ≈ 12
+       more ice creams per degree, so set `w` near 12.
+    2. Move `b` while watching the loss number (not just the picture), and stop where the
+       loss is smallest.
+    3. Try `w` one notch up or down, then redo step 2. If the loss got smaller, keep going in
+       that direction; if not, go back. Stop when changing `w` no longer helps.
+
+    For fine control, click a slider and use the **arrow keys**: each press moves it one notch.
     """)
     return
 

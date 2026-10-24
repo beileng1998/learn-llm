@@ -19,6 +19,6 @@ EXERCISES = {
     "mse": [
         Case("ch01.mse.tiny", lambda f: f(1, 0, [1, 2], [2, 4]), 2.5, tolerance=1e-9, hint="ch01.mse.hint"),
         Case("ch01.mse.perfect", lambda f: f(2, 1, [0, 1, 2], [1, 3, 5]), 0, tolerance=1e-9, hint="ch01.mse.hint"),
-        Case("ch01.mse.mia", lambda f: f(12, -108, TEMPS, SALES), 27.5, tolerance=1e-9, hint="ch01.mse.hint"),
+        Case("ch01.mse.mia", lambda f: f(10, -60, TEMPS, SALES), 177.5, tolerance=1e-9, hint="ch01.mse.hint"),
     ],
 }

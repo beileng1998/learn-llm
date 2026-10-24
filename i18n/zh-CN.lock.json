@@ -1,4 +1,5 @@
 {
   "00-first-program.py": "sha256:6ca920727723885d3cb3666c29c6b2dc466b86d382f809aff5b35496248b75c3",
-  "01-fitting-a-line.py": "sha256:f183b0a33915cc75ee36ed3b67952dea0ad90fc3509e9e864c4a20922873bf8a"
+  "01-fitting-a-line.py": "sha256:dd6fdd48123f6736e3c40e23765efa67c5539247afb8978c36811b2a6d44aae7",
+  "02-going-downhill.py": "sha256:924ee88bc56e1d9e8445aa2ff15f189314844f81065e92bc5543cf94fabccffb"
 }

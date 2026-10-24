@@ -20,6 +20,17 @@ uses = [
     "update-variable", "operator-precedence",
 ]
 
+[chapters.02]
+introduces = [
+    "nudge", "rate", "slope", "function-as-value", "step-rule", "learning-rate",
+    "builtin-range", "gradient-descent", "expanding-square", "derivative",
+    "derivative-rules",
+]
+uses = [
+    "mse", "loss", "parameter", "line", "function", "call", "return", "loop",
+    "update-variable", "operator-precedence", "chart-reading", "squaring",
+]
+
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
 error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
@@ -52,3 +63,14 @@ squaring = "a number times itself; never negative, and big numbers grow much big
 loss = "a number measuring how wrong a model is; lower is better"
 mse = "mean squared error: the average of the squared errors over all examples"
 update-variable = "x = x + 1: Python works out the right side with the old x, then stores the result back in x"
+nudge = "a tiny change to an input (like 0.0001) to see how the output changes"
+rate = "one change divided by another: how much of this per one of that"
+slope = "(f(x + h) - f(x)) / h: how much the output changes per unit of input, right here; sign = direction, size = steepness"
+function-as-value = "a function can be handed to another function as an input (no parentheses), and called inside it"
+step-rule = "new w = w - rate * slope: the minus makes the step go downhill"
+learning-rate = "the small number that sets the step size: too small is slow, too big overshoots or flies off"
+builtin-range = "for i in range(n): repeats the indented lines n times"
+gradient-descent = "repeat: measure the slope, take a step downhill"
+expanding-square = "(x + h) x (x + h) = x x x + 2 x x x h + h x h, seen as a square cut into four pieces"
+derivative = "the exact slope, as the nudge shrinks to nothing; written d/dx; d/dx(x^2) = 2x"
+derivative-rules = "constant: 0; c * x: c; x * x: 2 * x; c * f: c times f's slope; f + g: slopes add"

@@ -70,7 +70,7 @@ def test_every_check_has_a_message(number):
 def test_no_required_external_links(path):
     """Everything needed lives in the course; links only in the optional "go deeper" part."""
     required = path.read_text(encoding="utf-8").split("<!-- go-deeper -->")[0]
-    assert not re.findall(r"https?://", required)
+    assert not re.findall(r'(?<!xmlns=")https?://', required)  # SVG namespaces are not links
 
 
 def test_marimo_check_is_clean():
