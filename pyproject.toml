@@ -30,5 +30,9 @@ testpaths = ["tests"]
 auto_instantiate = true
 on_cell_change = "autorun"
 
+# Results show under the code that made them, as the lessons describe.
+[tool.marimo.display]
+cell_output = "below"
+
 [tool.marimo.save]
 autosave = "after_delay"

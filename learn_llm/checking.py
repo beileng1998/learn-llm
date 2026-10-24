@@ -9,7 +9,7 @@ from typing import Any, Callable
 
 from learn_llm.i18n import t
 
-PASS, FAIL, ERROR, TODO = "pass", "fail", "error", "todo"
+PASS, FAIL, ERROR, TODO, BLOCKED = "pass", "fail", "error", "todo", "blocked"
 
 
 @dataclass(frozen=True)
@@ -31,6 +31,8 @@ class Result:
     status: str
     got: Any = None
     error: str = ""
+    error_type: str = ""
+    waiting_for: str = ""  # for BLOCKED: the unfinished function this one calls
 
 
 def _same(got, expected, tolerance) -> bool:
@@ -39,16 +41,29 @@ def _same(got, expected, tolerance) -> bool:
     return got == expected
 
 
+def _todo_caller(error: NotImplementedError) -> Any:
+    """The code object of the function whose `todo()` raised `error`."""
+    frames, tb = [], error.__traceback__
+    while tb:
+        frames.append(tb.tb_frame)
+        tb = tb.tb_next
+    return frames[-2].f_code if len(frames) >= 2 else None
+
+
 def run(cases: list[Case], fn: Callable) -> list[Result]:
     results = []
     for case in cases:
         try:
             got = case.call(fn)
-        except NotImplementedError:
-            results.append(Result(case, TODO))
+        except NotImplementedError as e:
+            caller = _todo_caller(e)
+            if caller is None or caller is getattr(fn, "__code__", None):
+                results.append(Result(case, TODO))
+            else:  # this exercise is written, but it calls another one that isn't yet
+                results.append(Result(case, BLOCKED, waiting_for=caller.co_name))
             continue
         except Exception as e:  # learner code can raise anything; report it, don't crash the page
-            results.append(Result(case, ERROR, error=f"{type(e).__name__}: {e}"))
+            results.append(Result(case, ERROR, error=f"{type(e).__name__}: {e}", error_type=type(e).__name__))
             continue
         status = PASS if _same(got, case.expected, case.tolerance) else FAIL
         results.append(Result(case, status, got=got))
@@ -66,8 +81,13 @@ def explain(result: Result, locale: str) -> str:
         return t("check.case_pass", locale, what=what)
     if result.status == TODO:
         return t("check.case_todo", locale, what=what)
+    if result.status == BLOCKED:
+        return t("check.case_blocked", locale, what=what, name=result.waiting_for)
     if result.status == ERROR:
-        return t("check.case_error", locale, what=what, error=result.error)
+        line = t("check.case_error", locale, what=what, error=result.error)
+        hint_key = f"error.{result.error_type}"
+        hint = t(hint_key, locale)
+        return f"{line} {hint}" if hint != hint_key else line
     if result.got is None:
         return t("check.case_none", locale, what=what)
     return t(

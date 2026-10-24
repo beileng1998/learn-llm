@@ -1,13 +1,12 @@
 {
   "check.all_pass": "All checks pass. Well done!",
-  "check.not_started": "Not started yet: replace the todo() line with your code.",
+  "check.not_started": "Not started yet: delete the todo() line and write your code there.",
   "check.some_pass": "{n} of {total} checks pass. Keep going!",
   "check.case_pass": "✅ {what}",
-  "check.case_todo": "⬜ {what}: not written yet",
-  "check.case_none": "❌ {what}: your function gave back nothing (None). Did you forget `return`?",
+  "check.case_todo": "⬜ {what}: not written yet (the todo() line is still there)",
+  "check.case_none": "❌ {what}: your function gave back nothing (None, Python's word for \"no value\"). Did you forget `return`, or is your `return` indented so that it never runs?",
   "check.case_error": "❌ {what}: your code stopped with an error: `{error}`",
   "check.case_fail": "❌ {what}: got `{got}`, expected `{expected}`",
-
   "home.title": "learn-llm",
   "home.language": "Language",
   "home.chapters": "Chapters",
@@ -15,7 +14,6 @@
   "home.in_progress": "in progress",
   "home.not_started": "not started",
   "home.fallback": "(not translated yet, shown in English)",
-
   "ch00.to_fahrenheit.freezing": "0 °C (water freezes) is 32 °F",
   "ch00.to_fahrenheit.boiling": "100 °C (water boils) is 212 °F",
   "ch00.to_fahrenheit.negative": "-40 °C is also -40 °F",
@@ -23,8 +21,13 @@
   "ch00.total.small": "total([1, 2, 3]) is 6",
   "ch00.total.single": "a list with one number: total([5]) is 5",
   "ch00.total.empty": "an empty list adds up to 0",
-  "ch00.total.negative": "negative numbers work too: total([4, -1, -3]) is 0",
+  "ch00.total.negative": "negative numbers work too: total([4, -1, -2]) is 1",
   "ch00.average.small": "average([1, 2, 3]) is 2",
   "ch00.average.fraction": "average([1, 2]) is 1.5",
-  "ch00.average.single": "average([7]) is 7"
+  "ch00.average.single": "average([7]) is 7",
+  "check.case_blocked": "⏸ {what}: your function uses `{name}`, which isn't finished yet. Finish that exercise first.",
+  "error.NameError": "Python doesn't know one of the names you used. Check the spelling, and use the name in the parentheses on the `def` line (for example `celsius`).",
+  "error.UnboundLocalError": "A name was used before it was given a value. Give it a starting value (for example `= 0`) before the loop.",
+  "error.TypeError": "Two things that don't fit together were combined, for example a function's name without `(...)` after it, a whole list added to a number, or `len` given a number instead of a list.",
+  "error.ZeroDivisionError": "Something was divided by zero."
 }

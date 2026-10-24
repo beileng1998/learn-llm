@@ -97,3 +97,28 @@ def test_checks_report_common_mistakes():
 def test_notebooks_import_without_running_cells():
     module = load(LESSONS / SOURCE_LOCALE / "00-first-program.py")
     assert module.double(4) == 8
+
+
+def test_unfinished_helper_is_reported_not_blamed_on_the_caller():
+    from learn_llm import todo
+    from learn_llm.checking import BLOCKED, explain
+
+    def total(numbers):
+        todo()
+
+    def average(numbers):
+        return total(numbers) / len(numbers)
+
+    results = run(exercises("00")["average"], average)
+    assert {r.status for r in results} == {BLOCKED}
+    assert "`total`" in explain(results[0], "en")
+
+
+def test_common_errors_get_a_hint():
+    from learn_llm.checking import explain
+
+    def uses_wrong_name(celsius):
+        return x * 9 / 5 + 32  # noqa: F821
+
+    result = run(exercises("00")["to_fahrenheit"], uses_wrong_name)[0]
+    assert "`def` line" in explain(result, "en")  # points at the input name

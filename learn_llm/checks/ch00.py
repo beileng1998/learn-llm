@@ -11,7 +11,7 @@ EXERCISES = {
         Case("ch00.total.small", lambda f: f([1, 2, 3]), 6),
         Case("ch00.total.single", lambda f: f([5]), 5),
         Case("ch00.total.empty", lambda f: f([]), 0),
-        Case("ch00.total.negative", lambda f: f([4, -1, -3]), 0),
+        Case("ch00.total.negative", lambda f: f([4, -1, -2]), 1),
     ],
     "average": [
         Case("ch00.average.small", lambda f: f([1, 2, 3]), 2),
