@@ -122,3 +122,9 @@ def test_common_errors_get_a_hint():
 
     result = run(exercises("00")["to_fahrenheit"], uses_wrong_name)[0]
     assert "`def` line" in explain(result, "en")  # points at the input name
+
+
+def test_concept_ledger_has_no_gaps():
+    from learn_llm.ledger import problems
+
+    assert problems() == []

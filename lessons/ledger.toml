@@ -1,0 +1,31 @@
+# The concept ledger. See learn_llm/ledger.py for what is checked.
+# Each chapter: `introduces` (taught here, defined below) and `uses` (taught earlier).
+
+[chapters.00]
+introduces = [
+    "notebook-cell", "error-message", "arithmetic", "operator-precedence", "power",
+    "variable", "naming-rules", "function", "call", "return", "indentation", "comment",
+    "todo-placeholder", "list", "builtin-len", "loop", "if", "comparison", "mean",
+]
+uses = []
+
+[concepts]
+notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
+error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
+arithmetic = "+ - * / on numbers, typed with * and / (not × ÷)"
+operator-precedence = "* and / happen before + and -; parentheses go first"
+power = "a ** b multiplies a by itself b times"
+variable = "name = value stores a value under a name; = means store, not equals; one cell per name"
+naming-rules = "you choose names: letters, digits and _, no spaces"
+function = "def name(input): followed by indented steps; a named recipe"
+call = "name(input) runs a function with that input and gives its answer; a function can call another"
+return = "return value gives the answer back from a function"
+indentation = "lines belonging to a def/for/if are pushed in 4 more spaces; the editor indents after :, Backspace un-indents"
+comment = "# starts a note for humans that Python ignores"
+todo-placeholder = "todo() marks code the learner still has to write"
+list = "[a, b, c] holds several values in order"
+builtin-len = "len(list) gives how many values a list holds"
+loop = "for item in list: runs the indented lines once per value"
+if = "if condition: runs the indented lines only when the condition is true"
+comparison = "a > b, a < b give true or false"
+mean = "the average: total divided by how many values"

@@ -29,7 +29,8 @@ places where a real beginner would get lost. A chapter isn't done while a *block
 > Quote the exact text for each finding and propose a concrete fix. Don't praise; don't
 > summarise the lesson. If you find no blockers, say so plainly.
 >
-> Already taught: {LEDGER}
+> Already taught (from `python -m learn_llm.ledger NN`):
+> {LEDGER}
 
 ## Personas
 
