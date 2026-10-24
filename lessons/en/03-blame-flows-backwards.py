@@ -85,7 +85,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    (The last line shows four values at once, separated by commas: `140`, `80`, `17`, `289`.)
+    (The last line asks for four values at once, separated by commas. The page shows them as a
+    numbered list of items, counting from 0: item 0 is `p` = 140, item 1 is `g` = 80, item 2 is
+    `e` = 17, item 3 is `L` = 289.)
 
     Here are the same steps as a picture. Each box holds one value. An arrow means "this value
     is used to make that one", and the symbol on the arrow says how. Data you can't change sits
