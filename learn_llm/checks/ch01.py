@@ -11,14 +11,14 @@ EXERCISES = {
         Case("ch01.predict.order", lambda f: f(3, 10, 0), 10),
     ],
     "squared_error": [
-        Case("ch01.squared_error.over", lambda f: f(10, 7), 9),
+        Case("ch01.squared_error.over", lambda f: f(10, 7), 9, hint="ch01.squared_error.hint"),
         Case("ch01.squared_error.under", lambda f: f(7, 10), 9),
         Case("ch01.squared_error.exact", lambda f: f(5, 5), 0),
         Case("ch01.squared_error.big", lambda f: f(20, 10), 100),
     ],
     "mse": [
-        Case("ch01.mse.tiny", lambda f: f(1, 0, [1, 2], [1, 4]), 2, tolerance=1e-9),
-        Case("ch01.mse.perfect", lambda f: f(2, 1, [0, 1, 2], [1, 3, 5]), 0, tolerance=1e-9),
-        Case("ch01.mse.mia", lambda f: f(12, -110, TEMPS, SALES), 28.5, tolerance=1e-9),
+        Case("ch01.mse.tiny", lambda f: f(1, 0, [1, 2], [2, 4]), 2.5, tolerance=1e-9, hint="ch01.mse.hint"),
+        Case("ch01.mse.perfect", lambda f: f(2, 1, [0, 1, 2], [1, 3, 5]), 0, tolerance=1e-9, hint="ch01.mse.hint"),
+        Case("ch01.mse.mia", lambda f: f(12, -108, TEMPS, SALES), 27.5, tolerance=1e-9, hint="ch01.mse.hint"),
     ],
 }

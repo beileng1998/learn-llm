@@ -23,6 +23,7 @@ class Case:
     call: Callable[[Callable], Any]
     expected: Any
     tolerance: float = 0.0
+    hint: str = ""  # catalog key of an extra tip shown when the answer is wrong
 
 
 @dataclass(frozen=True)
@@ -90,9 +91,8 @@ def explain(result: Result, locale: str) -> str:
         return f"{line} {hint}" if hint != hint_key else line
     if result.got is None:
         return t("check.case_none", locale, what=what)
-    return t(
-        "check.case_fail", locale, what=what, got=repr(result.got), expected=repr(result.case.expected)
-    )
+    line = t("check.case_fail", locale, what=what, got=repr(result.got), expected=repr(result.case.expected))
+    return f"{line} {t(result.case.hint, locale)}" if result.case.hint else line
 
 
 def show(cases: list[Case], fn: Callable, locale: str):

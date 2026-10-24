@@ -106,11 +106,14 @@ def _():
 
     - **`w`** is the **steepness**: how many more ice creams each extra degree brings. With
       `w = 12`, every degree warmer adds 12 sales. A bigger `w` makes the line steeper.
-    - **`b`** is the **starting height**: it moves the whole line up or down without changing
-      its steepness. (It's what the recipe would guess at 0 °C, which can even be negative:
-      the line is only meant for the temperatures Mia sees.)
+    - **`b`** is the **starting height**: the line's height at 0 °C, because at 0 °C the
+      recipe gives `w × 0 + b`, and `w × 0` is 0. The big dot at the left edge of the chart
+      marks it. Mia never sells ice cream at 0 °C, so it doesn't matter that `b` turns out
+      negative; only the part of the line over her dots matters.
 
-    Drag the two sliders and watch the red line. Try to lay it along the dots.
+    Drag the two sliders and watch the red line. Try to lay it along the dots. Notice what `w`
+    does: the line swings around the big dot at 0 °C, like a door on its hinge. That's why,
+    after changing `w`, you usually have to move `b` again.
     """)
     return
 
@@ -118,7 +121,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     w_slider = mo.ui.slider(0, 20, step=0.5, value=6, label="w (steepness)", show_value=True)
-    b_slider = mo.ui.slider(-200, 100, step=1, value=0, label="b (starting height)", show_value=True)
+    b_slider = mo.ui.slider(-200, 100, step=1, value=-100, label="b (starting height)", show_value=True)
     return b_slider, w_slider
 
 
@@ -126,8 +129,9 @@ def _():
 def _(b_slider, sales, temps, w_slider):
     mo.vstack([
         mo.hstack([w_slider, b_slider], justify="start", gap=2),
-        chart((10, 36), (0, 320), "temperature (°C)", "ice creams sold",
-              dots=list(zip(temps, sales)), lines=[(w_slider.value, b_slider.value)]),
+        chart((0, 36), (-200, 320), "temperature (°C)", "ice creams sold",
+              dots=list(zip(temps, sales)), lines=[(w_slider.value, b_slider.value)],
+              marker=(0, b_slider.value)),
     ])
     return
 
@@ -142,7 +146,8 @@ def _():
 
     ## Exercise 1: the model's guess
 
-    Write `predict(w, b, x)`: it gives back the guess `w × x + b` for the input `x`.
+    Write `predict(w, b, x)`: it gives back the guess for the input `x`, which in Python is
+    `w * x + b`.
     (The recipe works for any input, so we call the input `x` rather than "temperature".)
     """)
     return
@@ -174,7 +179,8 @@ def _():
     - guess 120, truth 137: error = 120 − 137 = **−17** (guessed 17 too few)
 
     On the chart, each error is the dashed gap between a dot and the line. The table lists them
-    for the line your sliders set:
+    for the line your sliders set. (These are the same two sliders as above: moving any copy
+    moves them all.)
     """)
     return
 
@@ -188,8 +194,8 @@ def _(b_slider, sales, temps, w_slider):
     mo.vstack([
         mo.hstack([w_slider, b_slider], justify="start", gap=2),
         mo.hstack([
-            chart((10, 36), (0, 320), "temperature (°C)", "ice creams sold",
-                  dots=list(zip(temps, sales)), lines=[(_w, _b)],
+            chart((0, 36), (-200, 320), "temperature (°C)", "ice creams sold",
+                  dots=list(zip(temps, sales)), lines=[(_w, _b)], marker=(0, _b),
                   segments=[(_t, _s, _t, _w * _t + _b) for _t, _s in zip(temps, sales)]),
             mo.md("| temp | sold | guess | error |\n|---|---|---|---|\n" + _rows),
         ], align="center"),
@@ -208,8 +214,13 @@ def _():
 
     /// admonition | 🧰 Toolbox: squaring
     Squaring a number means multiplying it by itself: 3² = 3 × 3 = 9. In Python, `3 ** 2`.
-    A negative number squared is positive, because minus times minus is plus:
-    (−3)² = (−3) × (−3) = 9. So every squared error is zero or more, and nothing cancels.
+    `**` happens before `+` and `-`, so the square of a difference needs parentheses:
+    `(10 - 7) ** 2` is 9, while `10 - 7 ** 2` is 10 − 49.
+
+    A negative number squared is positive. Why is (−3) × (−3) = 9? Follow the pattern as the
+    first number goes down by 1: 2 × (−3) = −6, 1 × (−3) = −3, 0 × (−3) = 0. Each time the result
+    goes **up** by 3. One more step: (−1) × (−3) = 3, then (−2) × (−3) = 6, (−3) × (−3) = 9.
+    So every squared error is zero or more, and nothing cancels.
 
     Squaring also makes big misses count much more than small ones: an error of 2 becomes 4,
     but an error of 10 becomes 100. A line that is badly wrong on one day gets punished hard.
@@ -245,17 +256,21 @@ def _():
     0 would mean the line passes exactly through every dot.
 
     A number that measures how wrong a model is has a general name: the **loss**. The mean
-    squared error is the loss we use in this chapter.
+    squared error is the loss we use in this chapter. To get a feel for its size: if a line
+    missed by about 5 ice creams every day, each squared error would be about 25, and so would
+    their mean.
 
     ## Exercise 3: the loss of a line
 
     Write `mse(w, b, xs, ys)`, the mean squared error of the line with knobs `w` and `b` on
     the inputs `xs` and true answers `ys`. You have everything you need:
 
-    1. Start a running total at 0.
+    1. Start a running total at 0: `running = 0`.
     2. Loop over the pairs with `for x, y in zip(xs, ys):`. For each pair, use your `predict`
-       to get the guess, and your `squared_error` to compare it with `y`; add the result to
-       the running total.
+       to get the guess, and your `squared_error` to compare it with `y`. Add the result to
+       the running total the way chapter 00 counted with `big = big + 1`:
+       `running = running + ...`. Python works out the right side first, using the old
+       `running`, then stores the result back in `running`.
     3. After the loop, return the running total divided by how many pairs there are
        (`len(xs)`).
 
@@ -282,7 +297,12 @@ def _():
     ## The hunt
 
     Now use your loss as a scoreboard. Move the sliders to make the loss as small as you can.
-    Get it **below 50** and Mia can trust your line.
+    Get it **below 100** and Mia can trust your line.
+
+    A strategy that works: first set `w` so the line is about as steep as the row of dots.
+    Then move `b` until the line runs through the middle of the dots. Then try `w` one notch
+    up or down, and fix `b` again. For fine control, click a slider and use the **arrow keys**:
+    each press moves it one notch.
     """)
     return
 
@@ -292,16 +312,17 @@ def _(b_slider, sales, temps, w_slider):
     try:
         _loss = mse(w_slider.value, b_slider.value, temps, sales)
         _verdict = (
-            mo.callout(mo.md(f"**Loss: {_loss:,.1f}.** Below 50: a good line! For 30 °C it predicts "
+            mo.callout(mo.md(f"**Loss: {_loss:,.1f}.** Below 100: a good line! For 30 °C it predicts "
                              f"**{predict(w_slider.value, b_slider.value, 30):g}** ice creams."), kind="success")
-            if _loss < 50 else mo.callout(mo.md(f"**Loss: {_loss:,.1f}.** Keep going: get it below 50."), kind="warn")
+            if _loss < 100 else mo.callout(mo.md(f"**Loss: {_loss:,.1f}.** Keep going: get it below 100."), kind="warn")
         )
     except Exception:
         _verdict = mo.callout(mo.md("*Finish Exercise 3 to see the loss here.*"), kind="neutral")
     mo.vstack([
         mo.hstack([w_slider, b_slider], justify="start", gap=2),
-        chart((10, 36), (0, 320), "temperature (°C)", "ice creams sold",
-              dots=list(zip(temps, sales)), lines=[(w_slider.value, b_slider.value)]),
+        chart((0, 36), (-200, 320), "temperature (°C)", "ice creams sold",
+              dots=list(zip(temps, sales)), lines=[(w_slider.value, b_slider.value)],
+              marker=(0, b_slider.value)),
         _verdict,
     ])
     return
@@ -313,10 +334,12 @@ def _():
     ## The shape of the loss
 
     How did you find a good line? Probably by nudging one slider, checking whether the loss
-    went down, and nudging again. Let's look at that from above.
+    went down, and nudging again. Let's draw that search.
 
-    To draw a picture, keep just one knob: fix the starting height at `b = {BEST_B}` and only
-    change `w`. Each point on the curve below is the loss of one line, worked out with **your**
+    To draw a picture, keep just one knob: fix the starting height at `b = {BEST_B}` (close to
+    the best value) and only change `w`. This chart has new axes: along the bottom is `w`, not
+    the temperature, and the height is the loss. So each point on the curve stands for one whole
+    line, with that steepness, and how wrong it is. It was worked out with **your**
     `mse`. Drag the slider to move the big dot along the curve.
     """)
     return

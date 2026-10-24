@@ -26,7 +26,7 @@
   "ch00.average.fraction": "average([1, 2]) is 1.5",
   "ch00.average.single": "average([7]) is 7",
   "check.case_blocked": "⏸ {what}: your function uses `{name}`, which isn't finished yet. Finish that exercise first.",
-  "error.NameError": "Python doesn't know one of the names you used. Check the spelling, and use the name in the parentheses on the `def` line (for example `celsius`).",
+  "error.NameError": "Python doesn't know one of the names you used. Check the spelling, and use the names in the parentheses on the `def` line.",
   "error.UnboundLocalError": "A name was used before it was given a value. Give it a starting value (for example `= 0`) before the loop.",
   "error.TypeError": "Two things that don't fit together were combined, for example a function's name without `(...)` after it, a whole list added to a number, or `len` given a number instead of a list.",
   "error.ZeroDivisionError": "Something was divided by zero.",
@@ -38,7 +38,9 @@
   "ch01.squared_error.under": "guess 7, truth 10: error -3, squared still 9",
   "ch01.squared_error.exact": "a perfect guess has squared error 0",
   "ch01.squared_error.big": "guess 20, truth 10: error 10, squared 100",
-  "ch01.mse.tiny": "mse(1, 0, [1, 2], [1, 4]): squared errors 0 and 4, mean 2",
+  "ch01.mse.tiny": "mse(1, 0, [1, 2], [2, 4]): squared errors 1 and 4, mean 2.5",
   "ch01.mse.perfect": "a line through every point has loss 0",
-  "ch01.mse.mia": "Mia's data with w = 12, b = -110 has loss 28.5"
+  "ch01.mse.mia": "Mia's data with w = 12, b = -108 has loss 27.5",
+  "ch01.mse.hint": "Tip: if your answer is too small, check that `return` comes after the loop (not inside it) and that you add to the running total instead of replacing it.",
+  "ch01.squared_error.hint": "Tip: `**` happens before `-`, so put the difference in parentheses: `(guess - truth) ** 2`."
 }

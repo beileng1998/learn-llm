@@ -6,6 +6,7 @@ introduces = [
     "notebook-cell", "error-message", "arithmetic", "operator-precedence", "power",
     "variable", "naming-rules", "function", "call", "return", "indentation", "comment",
     "todo-placeholder", "list", "builtin-len", "loop", "if", "comparison", "mean",
+    "update-variable",
 ]
 uses = []
 
@@ -14,7 +15,10 @@ introduces = [
     "builtin-zip", "tuple", "builtin-print", "chart-reading", "model", "parameter",
     "line", "error", "squaring", "loss", "mse",
 ]
-uses = ["list", "loop", "function", "call", "return", "mean", "power", "builtin-len"]
+uses = [
+    "list", "loop", "function", "call", "return", "mean", "power", "builtin-len",
+    "update-variable", "operator-precedence",
+]
 
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
@@ -47,3 +51,4 @@ error = "guess minus truth; positive means too high, negative too low"
 squaring = "a number times itself; never negative, and big numbers grow much bigger"
 loss = "a number measuring how wrong a model is; lower is better"
 mse = "mean squared error: the average of the squared errors over all examples"
+update-variable = "x = x + 1: Python works out the right side with the old x, then stores the result back in x"

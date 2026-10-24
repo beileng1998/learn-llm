@@ -26,7 +26,7 @@
   "ch00.average.fraction": "average([1, 2]) 等于 1.5",
   "ch00.average.single": "average([7]) 等于 7",
   "check.case_blocked": "⏸ {what}：你的函数用到了 `{name}`，而它还没写完。先完成那道练习。",
-  "error.NameError": "Python 不认识你用到的某个名字。检查拼写，并使用 `def` 那一行括号里的名字（比如 `celsius`）。",
+  "error.NameError": "Python 不认识你用到的某个名字。检查拼写，并使用 `def` 那一行括号里的名字。",
   "error.UnboundLocalError": "某个名字在存进值之前就被使用了。在循环之前先给它一个初始值（比如 `= 0`）。",
   "error.TypeError": "把两样不能一起计算的东西写进了同一个算式，比如函数名后面忘了加 `(...)`、把整个列表和一个数相加，或者在 `len` 的括号里放了一个数而不是列表。",
   "error.ZeroDivisionError": "有地方除以了零。",
@@ -38,7 +38,9 @@
   "ch01.squared_error.under": "猜 7，真实 10：误差 -3，平方后仍是 9",
   "ch01.squared_error.exact": "猜得完全准，平方误差是 0",
   "ch01.squared_error.big": "猜 20，真实 10：误差 10，平方后 100",
-  "ch01.mse.tiny": "mse(1, 0, [1, 2], [1, 4])：平方误差是 0 和 4，平均是 2",
+  "ch01.mse.tiny": "mse(1, 0, [1, 2], [2, 4])：平方误差是 1 和 4，平均是 2.5",
   "ch01.mse.perfect": "穿过每个点的直线，损失是 0",
-  "ch01.mse.mia": "用米娅的数据，w = 12、b = -110 时损失是 28.5"
+  "ch01.mse.mia": "用米娅的数据，w = 12、b = -108 时损失是 27.5",
+  "ch01.mse.hint": "提示：如果结果偏小，检查 `return` 是不是写在循环之后（而不是循环里面），以及是不是把结果加到累计值上，而不是把累计值替换掉。",
+  "ch01.squared_error.hint": "提示：`**` 比 `-` 先算，所以要把差放进括号：`(guess - truth) ** 2`。"
 }
