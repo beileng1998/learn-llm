@@ -1,0 +1,97 @@
+# The concept ledger. See learn_llm/ledger.py for what is checked.
+# Each chapter: `introduces` (taught here, defined below) and `uses` (taught earlier).
+
+[chapters.00]
+introduces = [
+    "notebook-cell", "error-message", "arithmetic", "operator-precedence", "power",
+    "variable", "naming-rules", "function", "call", "return", "indentation", "comment",
+    "todo-placeholder", "list", "builtin-len", "loop", "if", "comparison", "mean",
+    "update-variable",
+]
+uses = []
+
+[chapters.01]
+introduces = [
+    "builtin-zip", "tuple", "builtin-print", "chart-reading", "model", "parameter",
+    "line", "error", "squaring", "loss", "mse",
+]
+uses = [
+    "list", "loop", "function", "call", "return", "mean", "power", "builtin-len",
+    "update-variable", "operator-precedence",
+]
+
+[chapters.02]
+introduces = [
+    "nudge", "rate", "slope", "function-as-value", "step-rule", "learning-rate",
+    "builtin-range", "gradient-descent", "expanding-square", "derivative",
+    "derivative-rules",
+]
+uses = [
+    "mse", "loss", "parameter", "line", "function", "call", "return", "loop",
+    "update-variable", "operator-precedence", "chart-reading", "squaring",
+]
+
+[chapters.03]
+introduces = [
+    "computation-graph", "local-slope", "chain-rule", "blame", "backpropagation",
+    "gradient", "blames-add", "two-sided-product", "return-pair", "gradient-check",
+]
+uses = [
+    "slope", "derivative", "derivative-rules", "expanding-square", "nudge", "mse",
+    "step-rule", "learning-rate", "gradient-descent", "builtin-range", "tuple",
+    "builtin-zip", "update-variable", "function-as-value",
+]
+
+[concepts]
+notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
+error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
+arithmetic = "+ - * / on numbers, typed with * and / (not × ÷)"
+operator-precedence = "* and / happen before + and -; parentheses go first"
+power = "a ** b multiplies a by itself b times"
+variable = "name = value stores a value under a name; = means store, not equals; one cell per name"
+naming-rules = "you choose names: letters, digits and _, no spaces"
+function = "def name(input): followed by indented steps; a named recipe"
+call = "name(input) runs a function with that input and gives its answer; a function can call another"
+return = "return value gives the answer back from a function"
+indentation = "lines belonging to a def/for/if are pushed in 4 more spaces; the editor indents after :, Backspace un-indents"
+comment = "# starts a note for humans that Python ignores"
+todo-placeholder = "todo() marks code the learner still has to write"
+list = "[a, b, c] holds several values in order"
+builtin-len = "len(list) gives how many values a list holds"
+loop = "for item in list: runs the indented lines once per value"
+if = "if condition: runs the indented lines only when the condition is true"
+comparison = "a > b, a < b give true or false"
+mean = "the average: total divided by how many values"
+builtin-zip = "zip(xs, ys) pairs up two lists position by position"
+tuple = "for a, b in ...: takes two values at a time, one for each name"
+builtin-print = "print(...) shows values as text under the cell, every time it runs"
+chart-reading = "x-axis (bottom) measures the first number, y-axis (left) the second; each dot is one pair"
+model = "a recipe with adjustable numbers that turns an input into a guess"
+parameter = "a model's adjustable numbers (its knobs); learning means finding good values for them"
+line = "guess = w * x + b: w is the steepness, b the starting height (the guess at x = 0)"
+error = "guess minus truth; positive means too high, negative too low"
+squaring = "a number times itself; never negative, and big numbers grow much bigger"
+loss = "a number measuring how wrong a model is; lower is better"
+mse = "mean squared error: the average of the squared errors over all examples"
+update-variable = "x = x + 1: Python works out the right side with the old x, then stores the result back in x"
+nudge = "a tiny change to an input (like 0.0001) to see how the output changes"
+rate = "one change divided by another: how much of this per one of that"
+slope = "(f(x + h) - f(x)) / h: how much the output changes per unit of input, right here; sign = direction, size = steepness"
+function-as-value = "a function can be handed to another function as an input (no parentheses), and called inside it"
+step-rule = "new w = w - rate * slope: the minus makes the step go downhill"
+learning-rate = "the small number that sets the step size: too small is slow, too big overshoots or flies off"
+builtin-range = "for i in range(n): repeats the indented lines n times"
+gradient-descent = "repeat: measure the slope, take a step downhill"
+expanding-square = "(x + h) x (x + h) = x x x + 2 x x x h + h x h, seen as a square cut into four pieces"
+derivative = "the exact slope, as the nudge shrinks to nothing; written d/dx; d/dx(x^2) = 2x"
+derivative-rules = "constant: 0; c * x: c; x * x: 2 * x; c * f: c times f's slope; f + g: slopes add"
+computation-graph = "a calculation drawn as boxes (values) and arrows (which values make which), one small step per box"
+local-slope = "for one arrow: how much the result moves per unit nudge of one input, everything else held still"
+chain-rule = "rates along a path multiply, like chaining currency exchange rates"
+blame = "a box's blame: how much the final loss moves per unit this box moves (its slope of the loss)"
+backpropagation = "walk the graph backwards: blame of a box = local slope of its arrow x blame of the box it points to"
+gradient = "the slopes of the loss for all the knobs together"
+blames-add = "when a value feeds several arrows, the blames arriving through each arrow add up"
+two-sided-product = "in a x c, nudging a moves the result by c per unit, nudging c moves it by a"
+return-pair = "return a, b gives back two values; x, y = f(...) catches both"
+gradient-check = "compare a hand-written gradient against nudging"

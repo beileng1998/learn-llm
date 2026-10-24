@@ -1,0 +1,123 @@
+# Curriculum design
+
+Tier 2, Track A. Status: decided 2026-10-24: route R3, the recommended gradient
+combination, and the same English text for every language from ch 10. Decisions live in
+SCOPE.md; this file keeps the reasoning and the rejected options.
+
+## Brief
+
+- **Job:** When I start from almost nothing and want to really understand how LLMs work,
+  I want one path where every step follows from the last, so that I never get lost, never
+  have to look elsewhere, and come out able to derive, code and explain every piece myself.
+- **Who:** adult self-learners with high-school arithmetic (P1–P3 in `novice-review.md`).
+  **Not served:** people who want a fast survey, an API-usage course or a credential.
+- **Evidence:** UNVALIDATED beyond the maintainer's own experience. Cheapest validation:
+  watch 2–3 real beginners do chapters 00–02 before writing chapter 05.
+- **The one thing:** *no gaps.* A reader who does each page in order never meets an idea,
+  symbol or step that the course hasn't already given them.
+- **Signature moment:** the learner computes a gradient three ways (by hand on tiny
+  numbers, by nudging, by their own backprop code) and watches all three agree.
+- **Non-goals:** surveying every architecture; matching the source courses' lecture order;
+  any concept taught "just trust me".
+- **Success signal:** completion rate per chapter; how many readers pass each chapter's
+  checks without outside help (measured later through optional, opt-in reports or issues).
+- **Acceptance:** for each chapter, zero blockers from the novice review, all checks pass,
+  and the concept ledger (below) has no item used before it was taught.
+
+## Mechanisms that enforce "no gaps"
+
+These are the parts that make the promise checkable rather than a hope.
+
+1. **Concept ledger (machine-checked).** Each chapter declares the ideas it *introduces* and
+   the ideas it *uses* (`derivative`, `chain-rule`, `matrix-shape`, ...). CI fails if a chapter
+   uses an idea no earlier chapter introduced. The same ledger is handed to the novice
+   reviewer as "Already taught", so the review checks the prose against it.
+2. **Novice-reader gate.** Every chapter passes the adversarial review in
+   `novice-review.md` (personas P1, P2, P3) with zero blockers.
+3. **Three views for every new piece of maths:** in words, in small concrete numbers,
+   in code, side by side. Notation (Σ, ∂, matrices) only appears *after* the reader has
+   used the idea in words and numbers, as a shorthand for something they already do.
+4. **Recall, don't link.** When a chapter needs an earlier idea, it restates it in two lines
+   on the page instead of sending the reader back. Cross-chapter links stay optional.
+5. **Every claim is checkable on the page.** Derived results (a derivative, a gradient
+   formula, a shape rule) are always verified numerically right after, by the learner.
+6. **Wrong answers are designed, too.** For each exercise, the review lists the likeliest
+   wrong attempts; each must produce feedback that points to the fix (see
+   `reviews/ch00.md`: half of chapter 00's blockers were about feedback, not prose).
+
+## Choice 1: the route
+
+| | Route | Through-line | Cost |
+|---|---|---|---|
+| **R1** | Course order as drafted: vision (231n) → language (224N) → scale (336) → serving | None; each part has its own datasets | Most faithful to sources; least continuity between parts |
+| **R2** | One problem from start to end: predict the next character, solved better and better (counting → linear → MLP → RNN → attention → transformer → serving) | One dataset and one leaderboard for the whole course | Strongest continuity; vision shrinks to one optional detour; ch 01–02 harder to picture |
+| **R3** (recommended) | Numbers → digits → text. Learn the machinery on things you can see (a line, then handwritten digits, then a small CNN), then switch once to text, and from then on one text dataset and one leaderboard to the end | Two through-lines, one switch at ch 10 | Keeps 231n's core and easy visuals early; one deliberate switch, announced and motivated |
+
+R3 adds a **leaderboard** from ch 10: every new model is scored on the same held-out text
+(perplexity), so each chapter visibly beats the last. For zh-CN, the text dataset could be
+Chinese, character-level (open question).
+
+## Choice 2: how gradients and backprop are taught
+
+Headline options; the recommendation combines several.
+
+1. **Nudge first.** The derivative starts as an experiment: move the knob a tiny bit,
+   measure how much the error moves, divide. Direction and steepness come from that ratio
+   before any formula.
+2. **Earn the rules by algebra of nudges.** (x + h)² − x² = 2xh + h², so the ratio is
+   2x + h, which becomes 2x as h shrinks. Every rule in the table is derived this way, then
+   checked numerically.
+3. **Exchange rates multiply (chain rule).** If moving w by a tiny amount moves the prediction
+   x times as much, and moving the prediction moves the loss 2·error times as much, then
+   moving w moves the loss x · 2·error times as much. Rates along a path multiply; when a
+   value feeds two places, the effects add. (Mechanism borrowed from currency conversion.)
+4. **Hand-trace tables.** Before any autograd code, the learner fills in a forward column
+   and a backward column for a 4-node graph on the page, cell by cell, with checks.
+5. **Live graph widget.** Drag an input; every node shows its value and its sensitivity
+   updating live. Makes "blame flows backwards" something you can see.
+6. **One element by hand, then the shape rule.** Matrix gradients (dW = xᵀ · dout) are derived
+   by computing one entry in full and checking a 2×2 case; the shape rule is a sanity
+   check, never the derivation.
+7. **Gradient check as a permanent tool.** From ch 02 on, every gradient the learner writes
+   is compared to nudging, automatically, in the page's checks.
+8. **(Extreme) No calculus notation until ch 06.** Everything is "nudge ratio" in words and
+   code; d/dx and ∂ appear only when the reader already does it fluently.
+
+**Recommended:** 1 + 2 + 3 + 4 + 6 + 7, with 5 if a spike shows marimo can do it smoothly,
+and notation introduced in ch 02 (not as late as option 8) once the nudge ratio is familiar.
+
+## Sketch: chapters 01–06 under R3 and the recommended approach
+
+To show what "no gaps" means in practice, here is the step sequence.
+
+- **01 Fitting a line.** Ice-cream sales vs. temperature. Prediction = w·x + b. Error, then
+  *squared* error (why: negatives cancel; big misses should count more), then mean squared
+  error (the mean from ch 00). Sliders for w and b; the learner hunts for the lowest error
+  by hand, then sees the error plotted against w: a valley.
+- **02 Going downhill.** "Which way should w move?" Nudge experiment → slope as a ratio → step
+  rule w ← w − rate · slope → learning rate too big/too small, seen live. Nudging costs two
+  error calculations per knob, so with a million knobs it's hopeless: motivation for exact
+  slopes. Algebra of nudges derives the rules (constant, sum, scale, x², product); each
+  checked numerically. Only then: "this ratio has a name, the derivative, written d/dx".
+- **03 Blame flows backwards.** Error = (w·x + b − y)² as a chain of small steps. Exchange
+  rates multiply along the chain; check by nudging. A value used twice: effects add; check.
+  Hand-trace table. Then code: a `Value` that remembers how it was made. The learner first
+  runs a backward pass in the wrong order, sees a wrong answer, and discovers why every user
+  of a value must report before it passes blame on (topological order).
+- **04 Many numbers at once.** Three features instead of one → dot product, in three views.
+  Matrices as many dot products at once; shapes; broadcasting. NumPy enters here as "the
+  same loops, written once".
+- **05 Recognising digits.** Scores → make positive (exp) → share of the total (softmax).
+  "Surprise" → log → cross-entropy. The gradient (probabilities − one-hot) is *derived* with
+  ch 03's rules on a 3-class example by hand, then vectorised, then gradient-checked.
+- **06 Neural networks.** Why a straight line can't bend; ReLU. Matrix backprop derived one
+  entry at a time (option 6). The learner's ch 03 engine and the matrix version must agree.
+
+## Decisions
+
+- Route: **R3** (user). R1 rejected: restarts between parts. R2 rejected: vision shrinks to a
+  detour and the first gradient chapters are harder to picture.
+- Gradients: **the recommended combination** (user). Option 8 (no notation until ch 06)
+  rejected: readers would meet standard notation too late to connect with other material.
+- Text from ch 10: **the same English text for every language** (user). One dataset and one
+  set of expected numbers.
