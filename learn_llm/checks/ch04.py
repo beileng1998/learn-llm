@@ -4,8 +4,8 @@ TEMPS = [14, 17, 20, 22, 25, 28, 31, 33]
 SALES = [63, 90, 137, 148, 193, 234, 257, 288]
 
 
-class _V:
-    """Stands in for the learner's Value: the same four slots."""
+class Value:
+    """Stands in for the learner's Value: the same four slots, and the same name in errors."""
 
     def __init__(self, data):
         self.data = data
@@ -14,29 +14,44 @@ class _V:
         self.local_slopes = []
 
 
+class _Shown(str):
+    """A description that prints without quotes, so feedback reads `[a, a]`, not `'[a, a]'`."""
+
+    __repr__ = str.__str__
+
+
 def _op(data, parents, slopes, book):
-    out = _V(data)
+    out = Value(data)
     out.parents, out.local_slopes = parents, slopes
     book.append(out)
     return out
 
 
 def _step(f, *numbers):
-    """Run one learner op on fresh values; describe what it built."""
+    """Run one learner op on fresh values; describe what it built (None if it gave back nothing)."""
     book = []
-    args = [_V(n) for n in numbers]
+    args = [Value(n) for n in numbers]
     out = f(*args, book)
+    if out is None:
+        return None
+    names = {id(a): n for a, n in zip(args, "ab")}
+    slopes = out.local_slopes
     return (
         out.data,
-        tuple(out.local_slopes),
-        tuple(p is a for p, a in zip(out.parents, args)) + (len(out.parents) == len(args),),
+        tuple(slopes) if isinstance(slopes, (list, tuple)) else slopes,
+        _Shown("[" + ", ".join(names.get(id(p), "something else") for p in out.parents) + "]"),
         len(book) == 1 and book[0] is out,
     )
 
 
+def _part(i, f, *numbers):
+    built = _step(f, *numbers)
+    return None if built is None else built[i]
+
+
 def _x_times_x_plus_x(backward):
     book = []
-    x = _V(3)
+    x = Value(3)
     total = _op(9 + 3, [_op(9, [x, x], [3, 3], book), x], [1, 1], book)
     backward(total, book)
     return x.grad
@@ -44,7 +59,7 @@ def _x_times_x_plus_x(backward):
 
 def _mia_day(backward):
     book = []
-    w, b, t, s = _V(10), _V(-60), _V(14), _V(63)
+    w, b, t, s = Value(10), Value(-60), Value(14), Value(63)
     p = _op(140, [w, t], [14, 10], book)
     g = _op(80, [p, b], [1, 1], book)
     e = _op(17, [g, s], [1, -1], book)
@@ -55,22 +70,22 @@ def _mia_day(backward):
 
 EXERCISES = {
     "add": [
-        Case("ch04.add.value", lambda f: _step(f, 3, 4)[0], 7, hint="ch04.op.hint"),
-        Case("ch04.add.slopes", lambda f: _step(f, 3, 4)[1], (1, 1), hint="ch04.add.hint"),
-        Case("ch04.op.parents", lambda f: _step(f, 3, 4)[2], (True, True, True), hint="ch04.op.hint"),
-        Case("ch04.op.book", lambda f: _step(f, 3, 4)[3], True, hint="ch04.op.hint"),
+        Case("ch04.add.value", lambda f: _part(0, f, 3, 4), 7, hint="ch04.op.hint"),
+        Case("ch04.add.slopes", lambda f: _part(1, f, 3, 4), (1, 1), hint="ch04.add.hint"),
+        Case("ch04.op.parents", lambda f: _part(2, f, 3, 4), _Shown("[a, b]"), hint="ch04.op.hint"),
+        Case("ch04.op.book", lambda f: _part(3, f, 3, 4), True, hint="ch04.op.hint"),
     ],
     "sub": [
-        Case("ch04.sub.value", lambda f: _step(f, 3, 4)[0], -1, hint="ch04.op.hint"),
-        Case("ch04.sub.slopes", lambda f: _step(f, 3, 4)[1], (1, -1), hint="ch04.sub.hint"),
-        Case("ch04.op.parents", lambda f: _step(f, 3, 4)[2], (True, True, True), hint="ch04.op.hint"),
-        Case("ch04.op.book", lambda f: _step(f, 3, 4)[3], True, hint="ch04.op.hint"),
+        Case("ch04.sub.value", lambda f: _part(0, f, 3, 4), -1, hint="ch04.op.hint"),
+        Case("ch04.sub.slopes", lambda f: _part(1, f, 3, 4), (1, -1), hint="ch04.sub.hint"),
+        Case("ch04.op.parents", lambda f: _part(2, f, 3, 4), _Shown("[a, b]"), hint="ch04.op.hint"),
+        Case("ch04.op.book", lambda f: _part(3, f, 3, 4), True, hint="ch04.op.hint"),
     ],
     "square": [
-        Case("ch04.square.value", lambda f: _step(f, -5)[0], 25, hint="ch04.op.hint"),
-        Case("ch04.square.slopes", lambda f: _step(f, -5)[1], (-10,), hint="ch04.square.hint"),
-        Case("ch04.square.parents", lambda f: _step(f, -5)[2], (True, True), hint="ch04.square.hint"),
-        Case("ch04.op.book", lambda f: _step(f, -5)[3], True, hint="ch04.op.hint"),
+        Case("ch04.square.value", lambda f: _part(0, f, -5), 25, hint="ch04.op.hint"),
+        Case("ch04.square.slopes", lambda f: _part(1, f, -5), (-10,), hint="ch04.square.hint"),
+        Case("ch04.square.parents", lambda f: _part(2, f, -5), _Shown("[a]"), hint="ch04.square.hint"),
+        Case("ch04.op.book", lambda f: _part(3, f, -5), True, hint="ch04.op.hint"),
     ],
     "backward": [
         Case("ch04.backward.reuse", _x_times_x_plus_x, 7, hint="ch04.backward.hint"),

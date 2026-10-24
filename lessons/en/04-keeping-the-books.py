@@ -75,17 +75,28 @@ def _():
     - `class Value:` says "here is the recipe for a new kind of value, called `Value`".
     - `def __init__(self, data):` is the setup function Python runs every time you make a new
       `Value`. The name `__init__` (two underscores on each side, short for *initialise*) is fixed
-      by Python. `self` stands for the new value being set up; `data` is the number you give it.
+      by Python. It has two inputs: `self` is the new value being set up, and `data` is the
+      number you give it.
     - `self.data = data` stores the number in a slot called `data`, inside this value. A slot like
-      this is called an **attribute**.
+      this is called an **attribute**. The word `data` appears twice here, meaning two different
+      things: on the left, `self.data` is the slot inside the value; on the right, `data` is the
+      input from the `def` line.
     - `self.grad = 0` starts its blame at 0. ("grad" is short for gradient: the blame from
       chapter 03. It starts at 0 because blame is collected later, by adding.)
     - `self.parents = []` and `self.local_slopes = []` start as empty lists: the boxes this one
       was made from, and the local slope towards each, filled in later.
 
-    Making one looks like calling a function. (As in chapter 03, several values separated by
-    commas on the last line show up as a numbered list of items, counting from 0.) A dot reads a slot: `v.data` means "the `data`
-    slot of `v`".
+    Making one looks like calling a function, but with only **one** input: `Value(3)`. You never
+    pass `self` yourself. `Value(3)` does three things:
+
+    1. Python makes a new, empty value.
+    2. It runs `__init__`, passing that new value in as `self` and `3` in as `data`. So
+       `self.data = data` fills the new value's `data` slot with 3.
+    3. It gives the filled-in value back, and `v = Value(3)` stores it under the name `v`.
+
+    A dot reads a slot: `v.data` means "the `data` slot of `v`". Each value has its own slots, so
+    below, `v` and `u` hold different numbers. (As in chapter 03, several values separated by
+    commas on the last line show up as a numbered list of items, counting from 0.)
     """)
     return
 
@@ -93,7 +104,8 @@ def _():
 @app.cell
 def _():
     v = Value(3)
-    v.data, v.grad, v.parents
+    u = Value(10)
+    v.data, u.data, v.grad, v.parents
     return
 
 
@@ -258,9 +270,24 @@ def _():
     have already passed their share of blame to it: its blame is complete, and it's safe to pass
     it on.
 
+    Here it is on Mia's day 1 from chapter 03. Recording `p = w × t`, `g = p + b`, `e = g − s`,
+    `L = e × e` writes the book in this order: entry 0 is `p`, then `g`, then `e`, then `L`.
+    Reading it backwards:
+
+    | step | entry | its blame is complete because… | it passes on |
+    |---|---|---|---|
+    | start | `L` | it is the loss: blame 1 | |
+    | 1 | `L` | | `e` gets 34 × 1 = 34 |
+    | 2 | `e` | its only user, `L`, is done | `g` gets 1 × 34, `s` gets −1 × 34 |
+    | 3 | `g` | its only user, `e`, is done | `p` gets 1 × 34, `b` gets 1 × 34 |
+    | 4 | `p` | its only user, `g`, is done | `w` gets 14 × 34 = 476, `t` gets 10 × 34 |
+
+    Every box hands on its blame only after all its users have handed theirs to it.
+
     Here is what goes wrong in the other order. Take `x × x + x` at `x = 3`. Its slope is
     `2 × 3 + 1 = 7` (slope of `x × x` plus slope of `x`). The cell below records it, then reads the
-    book **front to back** instead:
+    book **front to back** instead. (It uses your `add`, so it shows an error until Exercise 1
+    passes.)
     """)
     return
 
@@ -283,23 +310,32 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    (If this cell shows an error, finish Exercise 1 first: it uses your `add`.)
+    It says `1`, not `7`. The book holds two entries: first the product (`mul(x3, x3)`, whose
+    parents list is `[x3, x3]`: the **same** box twice, once per side of the `×`), then the total.
+    Front to back:
 
-    It says `1`, not `7`. Front to back, the multiplication was handled **first**, while the
-    product's blame was still 0 (the addition hadn't passed any blame to it yet). So `x` got
-    `3 × 0 + 3 × 0` from the multiplication, and only `1` from the addition. Reading backwards
-    fixes exactly this.
+    1. The product comes first. Its blame is still 0, because the total hasn't passed it any
+       yet. So `x` gets 3 × 0 from the first side and 3 × 0 from the second: nothing.
+    2. Then the total (blame 1) passes 1 × 1 to the product and 1 × 1 to `x`. `x` now has 1. The
+       product finally has its blame, 1, but its entry has already been read, so that blame is
+       never passed on.
+
+    Backwards, the total comes first: the product gets 1 and `x` gets 1. Then the product, now
+    holding its complete blame 1, passes 3 × 1 + 3 × 1 = 6 more to `x`. Total: 1 + 6 = 7.
 
     To go through a list from last to first, Python has `reversed`: `for entry in reversed(book):`.
 
     ## Exercise 4: backward
 
-    Write `backward(loss, book)`:
+    Write `backward(loss, book)`. Four lines, each one indented one step further than the line
+    before, because each sits inside the loop above it:
 
-    1. `loss.grad = 1`
-    2. `for entry in reversed(book):`, and inside it,
-       `for parent, slope in zip(entry.parents, entry.local_slopes):`, and inside that,
-       `parent.grad = parent.grad + slope * entry.grad`
+    ```python
+    loss.grad = 1
+    for entry in reversed(book):
+        for parent, slope in zip(entry.parents, entry.local_slopes):
+            parent.grad = parent.grad + slope * entry.grad
+    ```
 
     It doesn't need to `return` anything: the blames are stored in the boxes themselves.
     """)
@@ -324,7 +360,8 @@ def _():
     ## Mia's first day, through the engine
 
     Here is chapter 03's day 1 again (`t = 14`, `s = 63`, knobs `w = 10`, `b = -60`), this time
-    written with your engine. Nobody tells it the backward steps:
+    written with your engine. Nobody tells it the backward steps. (This cell and the picture
+    below it show an error until Exercises 1 to 4 all pass.)
     """)
     return
 
@@ -356,8 +393,7 @@ def _(L, b, e, g, p, s, t, w):
 def _():
     mo.md(r"""
     476 for `w` and 34 for `b`: the same numbers you found by hand in chapter 03, and every box
-    in the picture got its blame. (If you see an error instead, the exercises above aren't all
-    passing yet.) The data boxes `t` and `s` were made with `Value` too, so they collect blame as
+    in the picture got its blame. The data boxes `t` and `s` were made with `Value` too, so they collect blame as
     well; it's simply never used, because we can't change the data.
 
     ## Exercise 5: the gradient of the whole loss
@@ -397,7 +433,8 @@ def _():
     ## Fresh boxes every time
 
     One trap. Because `backward` **adds** to each blame, running it twice on the same boxes adds
-    the blame twice. The cell below records day 1 once, then reads the book backwards twice:
+    the blame twice. The cell below records day 1 once, then reads the book backwards twice. You
+    might expect double, 952. (Like the cells above, it needs Exercises 1 to 4.)
     """)
     return
 
@@ -419,7 +456,16 @@ def _():
     mo.md(r"""
     The second time, `w`'s blame is 2380, five times 476. On the second pass every box still
     holds its blame from the first pass, and the new shares are added on top of it, box after box
-    down the book, so the error grows at every step. That's why `engine_gradient` makes **fresh** `Value` boxes, with a fresh book, every
+    down the book:
+
+    - `L` is set to 1 again (that line stores, it doesn't add).
+    - `e` had 34 and gets 34 × 1 more: 68.
+    - `g` had 34 and gets 1 × 68 more: 102.
+    - `p` had 34 and gets 1 × 102 more: 136.
+    - `w` had 476 and gets 14 × 136 = 1904 more: 2380.
+
+    Each box passes on its whole, already-wrong blame, so the mistake grows at every step. That's
+    why `engine_gradient` makes **fresh** `Value` boxes, with a fresh book, every
     time it's called: every blame starts at 0. (Real deep-learning tools have the same rule;
     you'll meet it again with PyTorch.)
 
@@ -449,10 +495,23 @@ def _():
     with three knobs `a`, `w` and `b`. With `a` negative, the curve bends downwards, like a hill.
 
     One practical detail: here `x` is the temperature measured **from 25 °C, in tens of degrees**:
-    `x = (t - 25) / 10`, so 14 °C becomes -1.1 and 39 °C becomes 1.4. In chapter 02 you saw `b`
-    crawl because the loss reacted far more strongly to `w` than to `b`. With raw temperatures,
-    `x × x` would be in the hundreds and `a` would make that imbalance much worse. Small numbers
-    around 0 keep the three knobs on a similar footing, so one learning rate suits all of them.
+    `x = (t - 25) / 10`, so 14 °C becomes -1.1 and 39 °C becomes 1.4. Why? In chapter 02 you saw
+    `b` creep along because the loss reacts more strongly to a knob that gets multiplied by big
+    numbers, so one learning rate was safe for `w` but timid for `b`. Here `a` gets multiplied by
+    `x × x`:
+
+    | `x` | `x × x` runs from | to |
+    |---|---|---|
+    | raw temperature `t` | 14 × 14 = 196 | 39 × 39 = 1521 |
+    | `t / 10` | 1.4 × 1.4 = 1.96 | 3.9 × 3.9 = 15.21 |
+    | `(t - 25) / 10` | 0 | 1.4 × 1.4 = 1.96 |
+
+    With raw temperatures, `a` would be multiplied by numbers up to 1521 and `b` by 1: a learning
+    rate small enough for `a` would leave `b` almost frozen. Dividing by 10 helps, but every `x`
+    is still positive and `x × x` still reaches 15. Subtracting 25 first puts the middle of the
+    temperatures at 0, so `x` runs from about -1 to 1 and `x × x` from 0 to 2. Now all three knobs
+    are multiplied by numbers of similar size (`x × x`, `x`, and 1), and one learning rate suits
+    all of them.
 
     For a curve, chapter 03 would have meant working out new backward steps by hand. With your
     engine, you only write the forward recipe. Press the button to fit the curve with 500 steps of
@@ -503,7 +562,10 @@ def _(fit_curve, hot_sales, hot_temps):
 def _():
     mo.md(r"""
     The curve rises with the temperature and then turns down in the heatwave, and its loss is far
-    lower than any straight line's. You never worked out a backward step for it: the engine kept
+    lower than any straight line's. Because `x` is measured from 25 °C in tens of degrees, the
+    knobs read differently from chapter 01's `w = 10`, `b = -60`: `b` is the guess at 25 °C
+    (where `x = 0`), about 205 ice creams; `w` is how fast sales climb there, about 101 more per
+    10 degrees; and the negative `a` bends the curve back down as it gets hotter. You never worked out a backward step for it: the engine kept
     the books and did it.
 
     ## What's next

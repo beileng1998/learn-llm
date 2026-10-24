@@ -44,5 +44,7 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | attribute | 属性 | 04 |
 | the book (record of steps) | 账本 | 04 |
 | engine | 引擎 | 04 |
-| Value box | 盒子 / 框 | 04 |
+| Value box | 框（不用“盒子”，和计算图一致） | 04 |
+| backward step | 反向步骤（第 03 章口语说“往回算”） | 04 |
+| forward calculation | 正向计算（口语“往前算”） | 04 |
 | automatic differentiation | 自动微分 | 04 |

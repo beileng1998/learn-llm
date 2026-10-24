@@ -138,3 +138,23 @@ def test_a_list_counts_as_a_pair():
         return [2 * e * t, 2 * e]
 
     assert {r.status for r in run(cases, as_list)} == {"pass"}
+
+
+def test_engine_mistakes_read_plainly():
+    from learn_llm.checking import explain
+    from learn_llm.checks.ch04 import Value
+
+    def add_without_return(a, b, book):
+        out = Value(a.data + b.data)
+        out.parents, out.local_slopes = [a, b], [1, 1]
+        book.append(out)
+
+    def square_twice(a, book):
+        out = Value(a.data * a.data)
+        out.parents, out.local_slopes = [a, a], [2 * a.data]
+        book.append(out)
+        return out
+
+    assert all(r.got is None for r in run(exercises("04")["add"], add_without_return))
+    parents = run(exercises("04")["square"], square_twice)[2]
+    assert "got `[a, a]`, expected `[a]`" in explain(parents, "en")
