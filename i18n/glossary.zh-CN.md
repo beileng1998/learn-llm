@@ -59,3 +59,15 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | array | 数组 | 05 |
 | elementwise / position by position | 逐个位置 | 05 |
 | broadcasting | 广播 | 05 |
+| classification | 分类 | 06 |
+| label | 标签 | 06 |
+| pixel | 像素 | 06 |
+| score | 分数 | 06 |
+| accuracy | 准确率 | 06 |
+| probability / share | 概率 / 份额 | 06 |
+| surprise (−log p) | 意外程度 | 06 |
+| cross-entropy | 交叉熵 | 06 |
+| one-hot | one-hot（独热） | 06 |
+| transpose | 转置 | 06 |
+| template | 模板 | 06 |
+| test set | 测试集（测试图片） | 06 |
