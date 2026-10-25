@@ -68,6 +68,23 @@ def _mia_day(backward):
     return (w.grad, b.grad, s.grad)
 
 
+
+def _twice(engine_gradient):
+    """Compare a second call with the first, so a wrong answer isn't blamed on stale boxes."""
+    first = engine_gradient(10, -60, TEMPS, SALES)
+    second = engine_gradient(10, -60, TEMPS, SALES)
+    if first == second or (_close(first, second)):
+        return _Shown("the same answer both times")
+    return _Shown(f"{first!r}, then {second!r}")
+
+
+def _close(first, second):
+    try:
+        return all(abs(a - b) < 1e-9 for a, b in zip(first, second)) and len(first) == len(second)
+    except TypeError:
+        return False
+
+
 EXERCISES = {
     "add": [
         Case("ch04.add.value", lambda f: _part(0, f, 3, 4), 7, hint="ch04.op.hint"),
@@ -76,7 +93,7 @@ EXERCISES = {
         Case("ch04.op.book", lambda f: _part(3, f, 3, 4), True, hint="ch04.op.hint"),
     ],
     "sub": [
-        Case("ch04.sub.value", lambda f: _part(0, f, 3, 4), -1, hint="ch04.op.hint"),
+        Case("ch04.sub.value", lambda f: _part(0, f, 3, 4), -1, hint="ch04.sub.value_hint"),
         Case("ch04.sub.slopes", lambda f: _part(1, f, 3, 4), [1, -1], hint="ch04.sub.hint"),
         Case("ch04.op.parents", lambda f: _part(2, f, 3, 4), _Shown("[a, b]"), hint="ch04.parents.hint"),
         Case("ch04.op.book", lambda f: _part(3, f, 3, 4), True, hint="ch04.op.hint"),
@@ -84,7 +101,7 @@ EXERCISES = {
     "square": [
         Case("ch04.square.value", lambda f: _part(0, f, -5), 25, hint="ch04.op.hint"),
         Case("ch04.square.slopes", lambda f: _part(1, f, -5), [-10], hint="ch04.square.hint"),
-        Case("ch04.square.parents", lambda f: _part(2, f, -5), _Shown("[a]"), hint="ch04.parents.hint"),
+        Case("ch04.square.parents", lambda f: _part(2, f, -5), _Shown("[a]"), hint="ch04.square.hint"),
         Case("ch04.op.book", lambda f: _part(3, f, -5), True, hint="ch04.op.hint"),
     ],
     "backward": [
@@ -94,6 +111,6 @@ EXERCISES = {
     "engine_gradient": [
         Case("ch04.engine_gradient.tiny", lambda f: f(1, 0, [1, 2], [2, 4]), (-5, -3), tolerance=1e-9, hint="ch04.engine_gradient.hint"),
         Case("ch04.engine_gradient.mia", lambda f: f(10, -60, TEMPS, SALES), (-94, 2.5), tolerance=1e-9, hint="ch04.engine_gradient.hint"),
-        Case("ch04.engine_gradient.fresh", lambda f: (f(10, -60, TEMPS, SALES), f(10, -60, TEMPS, SALES))[1], (-94, 2.5), tolerance=1e-9, hint="ch04.engine_gradient.fresh_hint"),
+        Case("ch04.engine_gradient.fresh", _twice, _Shown("the same answer both times"), hint="ch04.engine_gradient.fresh_hint"),
     ],
 }

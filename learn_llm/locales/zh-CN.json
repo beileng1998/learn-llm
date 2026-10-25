@@ -90,12 +90,13 @@
   "ch04.square.hint": "提示：只有一个来源 `out.parents = [a]`，一个斜率 `out.local_slopes = [2 * a.data]`。",
   "ch04.backward.reuse": "x × x + x 在 x = 3 处：x 的责任是 7",
   "ch04.backward.mia": "米娅的第 1 天：w 和 b 的责任是 (476, 34)，s 的责任是 -34",
-  "ch04.backward.hint": "提示：先 `loss.grad = 1`；然后 `for entry in reversed(book):`（如果得到 1 或 0，检查一下 `reversed`）；在里面对 `zip(entry.parents, entry.local_slopes)` 循环，把责任加上去：`parent.grad = parent.grad + slope * entry.grad`。一个框用了两次，就会收到两份责任。",
+  "ch04.backward.hint": "提示：先 `loss.grad = 1`；然后 `for entry in reversed(book):`（如果得到 1 或 0，检查一下 `reversed`，再看看是不是把 `def backward` 那一行也粘贴进了函数里）；在里面对 `zip(entry.parents, entry.local_slopes)` 循环，把责任加上去：`parent.grad = parent.grad + slope * entry.grad`。一个框用了两次，就会收到两份责任。",
   "ch04.engine_gradient.tiny": "engine_gradient(1, 0, [1, 2], [2, 4]) 是 (-5, -3)，和第 03 章一样",
   "ch04.engine_gradient.mia": "米娅的数据，w = 10、b = -60：(-94, 2.5)",
   "ch04.engine_gradient.fresh": "调用两次，两次答案一样",
-  "ch04.engine_gradient.hint": "提示：按五步来：新的账本和新的值；循环里只用 `add`、`sub`、`mul`、`square` 累加出 `total`；用 `Value(1 / len(xs))` 求均值；`backward(mean, book)`；最后 `return w.grad, b.grad`。如果两个都得到 0，说明 `w` 和 `b` 没有经过这些函数。",
+  "ch04.engine_gradient.hint": "提示：按五步来：新的账本和新的值；循环里只用 `add`、`sub`、`mul`、`square` 累加出 `total`；用 `Value(1 / len(xs))` 求均值；`backward(mean, book)`；最后 `return w.grad, b.grad`（返回责任，不是框）。第 4、5 步写在循环之后，和 `for` 对齐，不要写在循环里面。如果两个都得到 0，检查一下 `return` 之前有没有调用 `backward(mean, book)`。",
   "ch04.engine_gradient.fresh_hint": "提示：账本和 `Value` 框都要在函数里面新建，这样每次调用时责任都从 0 开始。",
-  "error.TypeError.Value": "`Value` 框不能直接用 `+`、`-`、`*` 计算。在 `add`、`sub`、`mul`、`square` 里面，对里面的数做计算：`a.data + b.data`。其他地方都要用这些函数把框连起来，比如 `add(x, y, book)`，这样每一步才会记进账本。",
-  "ch04.parents.hint": "提示：`parents` 里放的是框本身 `[a, b]`，不是它们的数 `a.data`。平方只有一个来源：`[a]`。"
+  "error.TypeError.Value": "`Value` 框不能直接用 `+`、`-`、`*` 计算。在 `add`、`sub`、`mul`、`square` 内部，要对框里的数计算：`a.data + b.data`。其他地方都要用这些函数把框连起来，比如 `add(x, y, book)`，这样每一步才会记进账本。",
+  "ch04.parents.hint": "提示：`parents` 里放的是框本身 `[a, b]`，不是它们的数 `a.data`。",
+  "ch04.sub.value_hint": "提示：结果是 `a.data - b.data`，顺序不能反。"
 }

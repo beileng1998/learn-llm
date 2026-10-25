@@ -284,8 +284,6 @@ def _():
     | 3 | `g` | its only user, `e`, is done | `p` gets 1 × 34, `b` gets 1 × 34 |
     | 4 | `p` | its only user, `g`, is done | `w` gets 14 × 34 = 476, `t` gets 10 × 34 |
 
-    Every box hands on its blame only after all its users have handed theirs to it.
-
     Here is what goes wrong in the other order. Take `x × x + x` at `x = 3`. Its slope is
     `2 × 3 + 1 = 7` (slope of `x × x` plus slope of `x`). The cell below records it, then reads the
     book **front to back** instead. (It uses your `add`, so it shows an error until Exercise 1
@@ -343,7 +341,8 @@ def _():
                 parent.grad = parent.grad + slope * entry.grad
     ```
 
-    It doesn't need to `return` anything: the blames are stored in the boxes themselves.
+    Type only the four lines under `def`: the `def` line is already there in your cell. It
+    doesn't need to `return` anything: the blames are stored in the boxes themselves.
     """)
     return
 
@@ -415,7 +414,8 @@ def _():
     2. A running total that is itself a value: `total = Value(0)`.
     3. Loop with `for x, y in zip(xs, ys):`. Inside: `guess = add(mul(w, Value(x), book), b, book)`,
        then `e = sub(guess, Value(y), book)`, then `total = add(total, square(e, book), book)`.
-    4. After the loop, the mean is the total times `1 / len(xs)`:
+    4. After the loop (these lines line up with `for`, not inside it), the mean is the total
+       times `1 / len(xs)`:
        `mean = mul(total, Value(1 / len(xs)), book)`.
     5. `backward(mean, book)`, then `return w.grad, b.grad`.
     """)
@@ -516,8 +516,8 @@ def _():
     | `(t - 25) / 10` | 0 | 1.4 × 1.4 = 1.96 |
 
     With raw temperatures, `a` would be multiplied by numbers up to 1521 and `b` by 1: a learning
-    rate small enough for `a` would leave `b` almost frozen. Dividing by 10 helps, but every `x`
-    is still positive and `x × x` still reaches 15. Subtracting 25 first puts the middle of the
+    rate small enough for `a` would leave `b` almost frozen. Dividing by 10 helps, but `x × x`
+    still reaches 15. Subtracting 25 first puts the middle of the
     temperatures at 0, so `x` runs from about -1 to 1.5 and `x × x` from 0 to 2. Now all three knobs
     are multiplied by numbers of similar size (`x × x`, `x`, and 1), and one learning rate suits
     all of them.
@@ -572,7 +572,7 @@ def _():
     mo.md(r"""
     The curve rises with the temperature and then turns down in the heatwave, and its loss is far
     lower than any straight line's. Because `x` is measured from 25 °C in tens of degrees, the
-    knobs read differently from chapter 01's `w = 10`, `b = -60`: `b` is the guess at 25 °C
+    knobs read differently from the line's `w = 10`, `b = -60`: `b` is the guess at 25 °C
     (where `x = 0`), about 205 ice creams; `w` is how fast sales climb there, about 101 more per
     10 degrees; and the negative `a` bends the curve back down as it gets hotter. You never worked out a backward step for it: the engine kept
     the books and did it.

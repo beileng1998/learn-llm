@@ -49,3 +49,4 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | backward step | 反向步骤（第 03 章口语说“往回算”） | 04 |
 | forward calculation | 正向计算（口语“往前算”） | 04 |
 | automatic differentiation | 自动微分 | 04 |
+| topological order | 拓扑序 | 04 |
