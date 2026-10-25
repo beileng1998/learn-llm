@@ -164,3 +164,17 @@ def test_engine_mistakes_read_plainly():
 
     error = run(exercises("04")["add"], add_boxes_directly)[0]
     assert "`add(x, y, book)`" in explain(error, "en")
+
+
+def test_errors_keep_the_exercise_tip():
+    from learn_llm.checking import explain
+
+    def append_returns_nothing(rows, ws, b):
+        guesses = []
+        for row in rows:
+            guesses = guesses.append(b)
+        return guesses
+
+    line = explain(run(exercises("05")["predict_all"], append_returns_nothing)[0], "en")
+    assert "on its own line" in line  # the specific AttributeError hint
+    assert "Tip:" in line  # and the exercise's own tip

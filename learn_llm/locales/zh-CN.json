@@ -99,7 +99,7 @@
   "error.TypeError.Value": "`Value` 框不能直接用 `+`、`-`、`*` 计算。在 `add`、`sub`、`mul`、`square` 内部，要对框里的数计算：`a.data + b.data`。其他地方都要用这些函数把框连起来，比如 `add(x, y, book)`，这样每一步才会记进账本。",
   "ch04.parents.hint": "提示：`parents` 里放的是框本身 `[a, b]`，不是它们的数 `a.data`。",
   "ch04.sub.value_hint": "提示：结果是 `a.data - b.data`，顺序不能反。",
-  "error.ValueError": "把形状对不上的两个数组放在了一起。用 `@` 时，里面的两个数必须相同：`(8, 3) @ (3,)` 可以，`(8, 3) @ (2,)` 不行。用 `+ - * /` 时，两边的形状要一样（或者其中一边只是一个数）。检查一下 `X`、`w`、`y` 有没有用错位置。",
+  "error.ValueError": "把形状对不上的两个数组放在了一起。用 `@` 时，中间挨着的两个数必须相同：`(8, 3) @ (3,)` 可以，`(8, 3) @ (2,)` 不行；顺序也有关系：`(8,) @ (8, 3)` 可以，`(8, 3) @ (8,)` 不行。用 `+ - * /` 时，两边的形状要一样（或者其中一边只是一个数）。报错里 `gufunc signature` 那部分不用管，看最后说的是哪两个大小对不上。",
   "ch05.dot.small": "dot([1, 2, 3], [4, 5, 6]) 是 1×4 + 2×5 + 3×6 = 32",
   "ch05.dot.day": "dot([12, -8, 4], [25, 0, 1]) 是 304",
   "ch05.dot.one": "长度为 1 的向量：dot([3], [7]) 是 21",
@@ -116,5 +116,6 @@
   "ch05.gradient_np.tiny": "一个输入，两天分别是 [1] 和 [2]，销量 [2, 4]，在 w = [1]、b = 0 处：([-5], -3)，和第 03 章一样",
   "ch05.gradient_np.line": "米娅的数据，在 w = [10, 0, 0]、b = -60 处：([-94, 6.25, -2.75], 2.5)",
   "ch05.gradient_np.close": "米娅的数据，在 w = [12, -8, 4]、b = -105 处：([90.5, 1.5, 0.75], 3.5)",
-  "ch05.gradient_np.hint": "提示：`e = X @ w + b - y`；`grad_w = (2 * e) @ X / len(y)`（向量在前，矩阵在后）；`grad_b = np.mean(2 * e)`；`return grad_w, grad_b`。"
+  "ch05.gradient_np.hint": "提示：`e = X @ w + b - y`；`grad_w = (2 * e) @ X / len(y)`（向量 `2 * e` 在前，矩阵 `X` 在后）；`grad_b = np.mean(2 * e)`；`return grad_w, grad_b`。",
+  "error.AttributeError.append": "`list.append(x)` 把 `x` 加到列表里，自己什么也不返回（None）。`guesses.append(...)` 要单独写一行，不要写成 `guesses = guesses.append(...)`。"
 }

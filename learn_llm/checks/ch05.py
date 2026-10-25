@@ -16,8 +16,8 @@ def _plain(value):
         return value.tolist()
     if isinstance(value, np.generic):
         return value.item()
-    if isinstance(value, tuple):
-        return tuple(_plain(v) for v in value)
+    if isinstance(value, (tuple, list)):
+        return type(value)(_plain(v) for v in value)
     return value
 
 

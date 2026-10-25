@@ -33,7 +33,7 @@ def _():
     Mia didn't only write down the temperature. She also noted whether it **rained** that day
     (1 for yes, 0 for no) and whether it was a **weekend** (1 for yes, 0 for no). Here are her 8
     days again, with the best possible line's guess (the line `w × t + b` with the lowest loss,
-    about 27) and by how much it missed:
+    about 27) and by how much it missed. (Days are numbered from 0, the way Python counts.)
     """)
     return
 
@@ -64,14 +64,14 @@ def _():
     > guess = w_t × temperature + w_r × rain + w_k × weekend + b
 
     `w_t` is how many more ice creams per degree, `w_r` how many more (or fewer) on a rainy day,
-    `w_k` how many more on a weekend, and `b` the starting height, as before. Try knobs
+    `w_k` how many more on a weekend (k for wee**k**end, since `w` is already taken), and `b` the starting height, as before. Try knobs
     `w_t = 12`, `w_r = -8`, `w_k = 4`, `b = -105` on day 1 (17 °C, rain, not a weekend):
 
     > 12 × 17 + (-8) × 1 + 4 × 0 + (-105) = 204 − 8 + 0 − 105 = 91
 
     She sold 90: closer than the line's guess of 96.
 
-    Look at the shape of that sum: the knobs `[12, -8, 4]` and the day's inputs `[17, 1, 0]` are
+    Look at how that sum is built: the knobs `[12, -8, 4]` and the day's inputs `[17, 1, 0]` are
     multiplied **in pairs**, first with first, second with second, third with third, and the
     products are added up. Then `b` is added.
 
@@ -187,7 +187,7 @@ def _():
     that can do maths on all its numbers at once. An array has a `shape` slot that says how many
     rows and columns it has. (As in earlier chapters, values separated by commas on the last line
     show up as a numbered list; the shape `(8, 3)` itself shows up as a list of its two
-    numbers, 8 and 3.)
+    numbers, 8 and 3, and `y`'s shape `(8,)` as a list with just 8.)
     """)
     return
 
@@ -229,8 +229,8 @@ def _():
     mo.md(r"""
     `+` on two lists **glues** them together into one longer list. On two arrays it adds
     position by position: `[11, 22, 33]`. And `*` on arrays multiplies position by position:
-    `[10, 40, 90]`. (Inside a numbered list like this one, an array shows without commas,
-    as `[11 22 33]`; on its own, it shows as `array([11, 22, 33])`.)
+    `[10, 40, 90]`. (Inside a numbered list like this one, NumPy shows an array without commas,
+    as `[11 22 33]`.)
 
     A single number works against every position:
     """)
@@ -288,8 +288,8 @@ def _():
     ### Shapes must fit
 
     For `matrix @ vector`, each row must be as long as the vector: here, 3 inputs and 3 knobs.
-    In shapes: `(8, 3) @ (3,)` gives `(8,)`. The **inner** numbers (3 and 3) must match, and
-    they disappear; the outer number (8) is what's left. If they don't match, NumPy stops with an
+    In shapes: `(8, 3) @ (3,)` gives `(8,)`. The two numbers **in the middle** (3 and 3) must
+    match, and they disappear; the number on the outside (8) is what's left. If they don't match, NumPy stops with an
     error. The next cell does this on purpose, with 2 knobs for 3 inputs, so you know what that
     error looks like:
     """)
@@ -306,12 +306,13 @@ def _(X):
 def _():
     mo.md(r"""
     The error mentions `matmul` (short for *matrix multiplication*, NumPy's name for `@`) and the
-    sizes that don't fit: `size 2 is different from 3`. When you see it, check the shapes.
+    sizes that don't fit. Ignore the middle part (`gufunc signature ...`); the useful bit is at
+    the end: `size 2 is different from 3`. When you see it, check the shapes.
 
     ## Exercise 3: predict_np
 
     Write `predict_np(X, w, b)`: the guesses for every row of `X`, using `@`. Here `X` is a
-    matrix array and `w` a vector array. One line: `return X @ w + b`.
+    matrix and `w` a vector, both NumPy arrays. One line: `return X @ w + b`.
     """)
     return
 
@@ -377,7 +378,9 @@ def _():
     The gradient of the mean loss was the **mean** of these over all days.
 
     With three inputs, one day's error is `e = w_t × t + w_r × r + w_k × k + b − s`. Nothing new
-    happens: each knob multiplies its own input, so by the same rule
+    happens. Nudge `w_r` while the other knobs stay still: only the `w_r × r` part of the sum
+    moves, by `r` per unit of `w_r`, so the local slope from `e` to `w_r` is `r`. The same goes
+    for every knob: each one multiplies its own input, so by the same rule
 
     - slope for `w_t` = `2 × e × t`, slope for `w_r` = `2 × e × r`, slope for `w_k` = `2 × e × k`,
     - slope for `b` = `2 × e`.
@@ -405,12 +408,15 @@ def _():
 def _():
     mo.md(r"""
     The columns of `[[1, 2, 3], [4, 5, 6]]` are `[1, 4]`, `[2, 5]` and `[3, 6]`. Dotted with
-    `[1, 1]` they give 5, 7 and 9. In shapes: `(2,) @ (2, 3)` gives `(3,)`; again the inner
-    numbers match and disappear.
+    `[1, 1]` they give 5, 7 and 9. In shapes: `(2,) @ (2, 3)` gives `(3,)`; again the two numbers in
+    the middle match and disappear.
 
     So `(2 * e) @ X` gives, in one go, the three dot products we need: `2 × e` with the
     temperature column, with the rain column and with the weekend column. Shapes: `(8,) @ (8, 3)`
     gives `(3,)`, one number per knob. Divide by the number of days to get the means.
+
+    The order matters. `X @ (2 * e)` would be `(8, 3) @ (8,)`: the two sizes in the middle, 3 and
+    8, don't match, and you'd get the matmul error. The vector goes first.
 
     ## Exercise 5: gradient_np
 
@@ -418,7 +424,8 @@ def _():
     `b`:
 
     1. `e = X @ w + b - y`
-    2. `grad_w = (2 * e) @ X / len(y)`: a vector, one slope per knob in `w`.
+    2. `grad_w = (2 * e) @ X / len(y)`: a vector, one slope per knob in `w`. (`len(y)` is 8, the
+       number of days: `len` works on arrays too.)
     3. `grad_b = np.mean(2 * e)`: the slope for `b`.
     4. `return grad_w, grad_b`
     """)
@@ -513,7 +520,8 @@ def _():
 
     ## The payoff: fitting all four knobs
 
-    Now gradient descent, as in chapters 02 and 03, but for all knobs at once. One detail first,
+    Now gradient descent, as in chapters 02 and 03, but for all knobs at once: we **fit** the
+    model, which means finding good values for its knobs. One detail first,
     which you met in chapter 04: temperatures (14 to 33) are much bigger than the rain and
     weekend values (0 or 1), so one learning rate wouldn't suit all knobs. We measure temperature
     from 25 °C in tens of degrees again, and leave the other two columns alone:
