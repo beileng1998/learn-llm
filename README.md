@@ -5,7 +5,8 @@
 Go from almost no maths or programming to building your own large language model, then
 serving it the way production systems do. Everything happens on one page in your browser.
 
-> **Status: early.** Chapter 00 is a working prototype. Chapters 01–03 come next, for v0.1.
+> **Status: early.** Chapters 00–04 are ready: from your first line of Python to a working
+> backprop engine. Chapter 05 (many numbers at once) is next.
 > See the [full chapter map](SCOPE.md).
 
 ## Start
