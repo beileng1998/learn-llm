@@ -48,13 +48,13 @@ def navigation(number: str, default_locale: str, base: Path = WORK):
     # Plain escaped anchors keep chapter titles literal, and use the editor's
     # normal same-origin navigation and unsaved-change handling.
     controls = []
-    icons = ("lucide:chevron-left", "lucide:list", "lucide:chevron-right")
+    icons = ("ph:arrow-left-light", "ph:squares-four-light", "ph:arrow-right-light")
     for (url, label), icon in zip(navigation_links(number, locale, base), icons):
         attributes = (
             'class="learn-llm-navigation__button" '
             f'aria-label="{escape(label, quote=True)}" title="{escape(label, quote=True)}"'
         )
-        content = mo.icon(icon, size=18).text
+        content = mo.icon(icon, size=16).text
         if url is None:
             controls.append(f'<button type="button" {attributes} disabled>{content}</button>')
         else:
