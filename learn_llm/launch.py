@@ -18,6 +18,7 @@ import webbrowser
 
 from learn_llm.course import LESSONS, WORK
 from learn_llm.i18n import LOCALES, SOURCE_LOCALE
+from learn_llm.navigation import install_navigation
 
 SETTINGS = WORK / ".settings.json"
 
@@ -31,7 +32,7 @@ def default_locale() -> str:
 
 
 def prepare_workspace() -> None:
-    """Give the learner their own copy of each lesson. Never overwrite their work."""
+    """Copy new lessons; add shared navigation without replacing learner content."""
     WORK.mkdir(exist_ok=True)
     for source in LESSONS.rglob("*.py"):
         target = WORK / source.relative_to(LESSONS)
@@ -42,6 +43,12 @@ def prepare_workspace() -> None:
             shutil.copyfile(source, target)
     if not SETTINGS.exists():
         SETTINGS.write_text(json.dumps({"locale": default_locale()}), encoding="utf-8")
+    for code in LOCALES:
+        for path in (WORK / code).glob("[0-9][0-9]-*.py"):
+            try:
+                install_navigation(path, WORK)
+            except (OSError, SyntaxError, UnicodeError, ValueError) as error:
+                print(f"Navigation not added to {path}: {error}", file=sys.stderr)
 
 
 def free_port(start: int) -> int:
