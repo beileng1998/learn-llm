@@ -90,6 +90,9 @@ def visible_code(notebook: Path) -> list[ast.AST]:
     tree = ast.parse(notebook.read_text(encoding="utf-8"))
     shown = []
     for node in tree.body:
+        if isinstance(node, ast.ClassDef) and node.decorator_list:
+            shown.append(ast.ClassDef(**{**node.__dict__, "decorator_list": []}))  # @app.class_definition
+            continue
         if not isinstance(node, ast.FunctionDef) or not node.decorator_list:
             continue
         decorator = node.decorator_list[0]

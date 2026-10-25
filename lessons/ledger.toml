@@ -42,6 +42,17 @@ uses = [
     "builtin-zip", "update-variable", "function-as-value",
 ]
 
+[chapters.04]
+introduces = [
+    "class", "init-and-self", "attribute", "list-append", "builtin-reversed",
+    "recording-book", "reverse-order", "fresh-boxes", "curve-model", "centering-inputs",
+]
+uses = [
+    "blame", "backpropagation", "local-slope", "two-sided-product", "blames-add",
+    "gradient", "return-pair", "tuple", "builtin-zip", "update-variable", "mse",
+    "gradient-descent", "learning-rate", "list", "builtin-len", "derivative-rules",
+]
+
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
 error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
@@ -95,3 +106,13 @@ blames-add = "when a value feeds several arrows, the blames arriving through eac
 two-sided-product = "in a x c, nudging a moves the result by c per unit, nudging c moves it by a"
 return-pair = "return a, b gives back two values; x, y = f(...) catches both"
 gradient-check = "compare a hand-written gradient against nudging"
+class = "class Name: a recipe for a new kind of value with named slots; Name(...) makes one"
+init-and-self = "def __init__(self, ...): runs when a new value is made; self is the value being set up"
+attribute = "a named slot inside a value, read and stored with a dot: v.data, v.grad = 0"
+list-append = "list.append(x) adds x to the end of the list"
+builtin-reversed = "for x in reversed(list): goes from the last entry to the first"
+recording-book = "while a calculation runs, every step is written in a list (the book) in order"
+reverse-order = "a box is written after the boxes it was made from, so reading the book backwards reaches every user of a value before the value itself"
+fresh-boxes = "backward adds to blames, so every new calculation needs fresh Value boxes with blame 0"
+curve-model = "guess = a * x * x + w * x + b: a curve that can rise and then fall"
+centering-inputs = "measuring inputs from the middle in sensible units (like (t - 25) / 10) keeps all knobs on a similar footing"
