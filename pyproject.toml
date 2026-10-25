@@ -1,6 +1,6 @@
 [project]
 name = "learn-llm"
-version = "0.0.1"
+version = "0.1.0"
 description = "Understand modern AI by building it. One unbroken, hands-on path from your first line of Python to training and serving your own language model, with every idea derived and every line of code your own."
 readme = "README.md"
 license = "MIT"
