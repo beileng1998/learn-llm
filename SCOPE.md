@@ -37,7 +37,7 @@ that covers the essential knowledge of CS231n → CS224N → CS336 → tiny-llm.
 | 02 | Going downhill | Gradient descent with nudged slopes; exact derivatives | Rates, slope, limits (as closing in), derivative rules | 231n optimization |
 | 03 | Blame flows backwards | Backprop by hand and in plain code; exact gradients | Computation graphs, chain rule, blames add, gradient check | 231n backprop |
 | 04 | Keeping the books | A small automatic backprop engine (scalar autograd) | Classes, objects, recording a calculation, reverse order | 231n backprop |
-| 05 | Many numbers at once | Vectorized version with NumPy | Vectors, matrices, matmul, shapes/broadcasting | 231n numpy |
+| 05 | Many numbers at once | A model with several inputs; its loss and gradient in NumPy | Vectors, dot product, matrices, shapes, `@`, broadcasting, NumPy | 231n numpy |
 | 06 | Recognizing digits | Softmax classifier on MNIST | Probability, exp/log, cross-entropy | 231n softmax/SVM |
 | 07 | Neural networks | MLP with matrix backprop | Nonlinearity, gradient of matmul | 231n NN, A1/A2 |
 | 08 | Training that works | Optimizers, init, norms, regularization | Variance, moving averages | 231n training, A2 |

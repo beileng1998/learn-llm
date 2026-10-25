@@ -3,5 +3,6 @@
   "01-fitting-a-line.py": "sha256:dd6fdd48123f6736e3c40e23765efa67c5539247afb8978c36811b2a6d44aae7",
   "02-going-downhill.py": "sha256:3dadb6289a92106d88ab17ac659402a31e65764c2b12297130afaf394ea67c3b",
   "03-blame-flows-backwards.py": "sha256:1aa9907951cf567b4da013193b26f4ae6033630f30cfaa1ad7d37eea5f20c49f",
-  "04-keeping-the-books.py": "sha256:c4367b0660545e782548c58032c92b4332d11e280e2a2df4dad97c6cbc2b255f"
+  "04-keeping-the-books.py": "sha256:c4367b0660545e782548c58032c92b4332d11e280e2a2df4dad97c6cbc2b255f",
+  "05-many-numbers-at-once.py": "sha256:7e6d6ac955da3041709dc4107c82e924869dceac8998920e7b54a7dd38336fe0"
 }

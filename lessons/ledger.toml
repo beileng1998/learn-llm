@@ -53,6 +53,19 @@ uses = [
     "gradient-descent", "learning-rate", "list", "builtin-len", "derivative-rules",
 ]
 
+[chapters.05]
+introduces = [
+    "multi-input-model", "vector", "dot-product", "matrix", "list-of-lists", "shape",
+    "numpy", "numpy-array", "elementwise", "matmul-operator", "shape-rule", "numpy-mean",
+    "vector-times-matrix", "vectorized-gradient", "broadcasting",
+]
+uses = [
+    "list", "loop", "builtin-zip", "list-append", "mse", "gradient", "blame", "local-slope",
+    "step-rule", "learning-rate", "gradient-descent", "builtin-range", "nudge",
+    "centering-inputs", "attribute", "tuple", "builtin-len", "return-pair", "mean",
+    "error-message",
+]
+
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
 error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
@@ -116,3 +129,18 @@ reverse-order = "a box is written after the boxes it was made from, so reading t
 fresh-boxes = "backward adds to blames, so every new calculation needs fresh Value boxes with blame 0"
 curve-model = "guess = a * x * x + w * x + b: a curve that can rise and then fall"
 centering-inputs = "measuring inputs from the middle in sensible units (like (t - 25) / 10) keeps all knobs on a similar footing"
+multi-input-model = "guess = w_t × t + w_r × rain + w_k × weekend + b: one knob per input"
+vector = "a list of numbers, like the knobs [12, -8, 4] or one day's inputs [17, 1, 0]"
+dot-product = "multiply two vectors in pairs and add up the products: dot([1, 2], [3, 4]) = 11"
+matrix = "a table of numbers: one row per example (day), one column per input"
+list-of-lists = "a matrix in plain Python: rows = [[14, 0, 0], [17, 1, 0], ...]; for row in rows: gives one row at a time"
+shape = "rows then columns: (8, 3); a vector of 8 numbers has shape (8,)"
+numpy = "a library for maths on whole arrays, loaded as np; its tools are reached with np."
+numpy-array = "np.array(list) makes a vector or matrix array; X.shape gives its shape"
+elementwise = "on arrays, + - * / work position by position, and a single number works against every position; on lists, + glues"
+matmul-operator = "X @ w: dot product of every row of X with w; v @ w between two vectors is their dot product"
+shape-rule = "(8, 3) @ (3,) gives (8,): the inner sizes must match and disappear; otherwise a matmul error"
+numpy-mean = "np.mean(array) is the mean of all its numbers"
+vector-times-matrix = "v @ X: dot product of v with every column of X; (8,) @ (8, 3) gives (3,)"
+vectorized-gradient = "grad_w = (2 * e) @ X / n, grad_b = np.mean(2 * e): each knob's slope is the mean of 2e times its own input"
+broadcasting = "a smaller array used against every row: X - np.array([25, 0, 0]) subtracts 25 from each row's first column"
