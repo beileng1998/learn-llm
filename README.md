@@ -60,4 +60,5 @@ questions are welcome as GitHub issues.
 
 ## License
 
-Code: [MIT](LICENSE). Lesson text: [CC BY 4.0](LICENSE-CONTENT).
+Code: [MIT](LICENSE). Lesson text: [CC BY 4.0](LICENSE-CONTENT). The bundled MNIST digits
+(from chapter 06): [CC BY-SA 3.0](learn_llm/data/MNIST-NOTICE.md), by Yann LeCun and Corinna Cortes.

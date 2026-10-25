@@ -49,4 +49,4 @@
 
 ## 许可
 
-代码：[MIT](LICENSE)。课程文字：[CC BY 4.0](LICENSE-CONTENT)。
+代码：[MIT](LICENSE)。课程文字：[CC BY 4.0](LICENSE-CONTENT)。随课程附带的 MNIST 手写数字（从第 06 章起使用）：[CC BY-SA 3.0](learn_llm/data/MNIST-NOTICE.md)，作者 Yann LeCun 和 Corinna Cortes。
