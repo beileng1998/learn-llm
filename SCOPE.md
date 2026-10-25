@@ -112,6 +112,7 @@ On a fresh clone, on Ubuntu and macOS CI runners with no GPU:
 - Web app: marimo notebooks (user, 2026-10-24)
 - v0.1: chapters 00–03 plus the one-command environment (user, 2026-10-24); acceptance check green in CI on Ubuntu, macOS, Windows (PR #1)
 - New chapter 04 "Keeping the books" (automatic engine) before "Many numbers at once"; later chapters shift by one (user, 2026-10-25)
+- NumPy (`numpy>=2.5`, BSD-3-Clause, no dependencies of its own) is the second runtime dependency, from chapter 05; Python floor raised to 3.12, which NumPy 2.5 needs (user, 2026-10-25)
 
 - Installer: uv (pinned version) behind `start.sh` / `make start`; Windows uses `start.cmd` → `start.ps1` (user, 2026-10-24)
 

@@ -5,9 +5,10 @@ description = "Understand modern AI by building it. One unbroken, hands-on path 
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE", "LICENSE-CONTENT"]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "marimo>=0.25.2",
+    "numpy>=2.5",
 ]
 
 [dependency-groups]
