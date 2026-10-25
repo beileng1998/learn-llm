@@ -35,6 +35,12 @@ def _list(values):
     return tuple(np.asarray(v).tolist() for v in values)
 
 
+def _count(f):
+    """How many things forward gave back (None counts as 0, a single array as 1)."""
+    out = f(X, W1, B1, W2, B2)
+    return 0 if out is None else len(out) if isinstance(out, tuple) else 1
+
+
 def _part(i):
     """Item i of forward's (Z, H, S); anything else is shown as it is, for the hint to explain."""
     def get(f):
@@ -58,9 +64,10 @@ def _grads(part):
 EXERCISES = {
     "relu": [
         Case("ch07.relu.mixed", lambda f: _plain(f(np.array([[-2.0, 0.0, 3.0], [1.5, -0.5, 0.0]]))), [[0.0, 0.0, 3.0], [1.5, 0.0, 0.0]], tolerance=1e-12, hint="ch07.relu.hint"),
-        Case("ch07.relu.shape", lambda f: np.shape(f(np.zeros((4, 7)))) == (4, 7), True, hint="ch07.relu.hint"),
+        Case("ch07.relu.shape", lambda f: list(np.shape(f(np.zeros((4, 7))))), [4, 7], hint="ch07.relu.hint"),
     ],
     "forward": [
+        Case("ch07.forward.count", _count, 3, hint="ch07.forward.hint"),
         Case("ch07.forward.z", _part(0), _forward()[0].tolist(), tolerance=1e-9, hint="ch07.forward.hint"),
         Case("ch07.forward.h", _part(1), _forward()[1].tolist(), tolerance=1e-9, hint="ch07.forward.hint"),
         Case("ch07.forward.s", _part(2), _forward()[2].tolist(), tolerance=1e-9, hint="ch07.forward.hint"),

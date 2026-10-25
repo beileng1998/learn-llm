@@ -92,7 +92,7 @@ def explain(result: Result, locale: str) -> str:
         line = t("check.case_error", locale, what=what, error=result.error)
         hint_key = f"error.{result.error_type}"
         # A more specific hint when the error mentions one of these.
-        for clue, suffix in (("'Value'", "Value"), ("'append'", "append"), ("truth value", "truth")):
+        for clue, suffix in (("'Value'", "Value"), ("'append'", "append"), ("truth value", "truth"), ("module 'numpy'", "numpy"), ("for ^", "caret"), ("bitwise_xor", "caret")):
             if clue in result.error and t(f"{hint_key}.{suffix}", locale) != f"{hint_key}.{suffix}":
                 hint_key += f".{suffix}"
                 break

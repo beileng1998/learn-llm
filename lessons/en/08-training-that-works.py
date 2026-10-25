@@ -23,7 +23,7 @@ def _():
     mo.md(r"""
     # 08 · Training that works
 
-    Chapter 07's network reached about 94.5%, but it had loose ends. We started its knobs at
+    Chapter 07's network reached about 94%, but it left loose ends. We started its knobs at
     sizes 0.05 and 0.18 without saying why. Every step looked at all 10,000 pictures, so 300 steps
     took about 10 seconds. And back in chapter 02, Mia's `b` crawled because one learning rate
     can't suit every knob; we've been working around that by rescaling inputs ever since.
@@ -142,13 +142,16 @@ def _(X, X_test, Y, test_labels):
 def _():
     mo.md(r"""
     The largest first-layer knob is still exactly 0 (`np.abs` makes every number positive, so
-    `np.max(np.abs(...))` is the biggest size), and the test accuracy is about 12%: no better than
-    guessing. Random starting knobs break the tie: every detector starts out different.
+    `np.max(np.abs(...))` is the biggest size), and the test accuracy is about 12%: only the
+    `b`s learned, so it answers the same digit for every picture, about as good as guessing. Random starting knobs break the tie: every detector starts out different.
 
     **How big?** Look at one detector's sum for one picture, `z = w0 × x0 + w1 × x1 + … ` over
-    `n` inputs, with random knobs of typical size `s`. A useful fact about sums of independent
-    random parts: **their variances add**. Each part `w × x` has variance `s² × x²` (scaling a
-    random number by `x` scales its spread by `x`, so the variance by `x²`), so
+    `n` inputs, with random knobs of typical size `s` (so variance `s²`; `rng.normal(0, 0.05, …)` gives
+    typical size 0.05, variance 0.05²). The knobs are **independent**: each is drawn on its own,
+    without looking at the others. A useful fact about sums of independent random parts: **their
+    variances add**. Each part `w × x` has variance `s² × x²` (scaling a random number by `x`
+    scales its spread by `x`, so the variance by `x²`). Adding the `n` parts gives
+    `s² × (x0² + x1² + …)`, and that sum of `n` squares is `n` times their mean:
 
     > variance of `z` ≈ `n × s² × (mean of x²)`
 
@@ -174,23 +177,27 @@ def _(X):
 def _():
     mo.md(r"""
     About 0.14 measured, 0.135 predicted: the rule holds (the small difference is the luck of
-    2,000 draws). Then the bend: ReLU sets the negative half of the `z`s to 0 and keeps the
-    positive half, so the mean of the squares is cut in half:
+    2,000 draws). Then the bend. The `z`s are centred on 0 (each knob is as
+    likely to be + as −), so about half of them are negative, and their mean square is their
+    variance. ReLU sets the negative half to 0 and keeps the positive half, so the mean of the
+    squares should be cut in half:
     """)
     return
 
 
 @app.cell
 def _(z_samples):
-    np.mean(np.maximum(z_samples, 0) ** 2), variance(z_samples) / 2
+    np.mean(np.maximum(z_samples, 0) ** 2), np.mean(z_samples ** 2) / 2
     return
 
 
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    So after one layer, the mean square is `n × s² × (mean of x²) / 2`. For values to keep the
-    same size from layer to layer, we want `n × s² / 2 = 1`, that is
+    0.073 against 0.071: half. So after one layer, the mean square is
+    `n × s² × (mean of x²) / 2`. This layer's output is the next layer's input, so this mean
+    square becomes the next layer's "mean of x²". For it to stay the same from layer to layer,
+    the factor in front must be 1: `n × s² / 2 = 1`, that is
 
     > `s² = 2 / n`, so the typical starting size is `s = √(2 / n)`
 
@@ -199,8 +206,8 @@ def _():
     initialisation**.
 
     Why it matters shows up in deeper networks. Below, pictures pass through 6 layers of 64 ReLU
-    detectors, with three choices of starting size. The numbers are the typical size of the
-    values after each layer:
+    detectors, with three choices of starting size. The numbers are √(mean of the squares)
+    of the values after each layer (the input pixels start at about 0.33):
     """)
     return
 
@@ -225,7 +232,8 @@ def _(X):
 def _():
     mo.md(r"""
     Too small and the values fade to 0 within a few layers: no signal, and (since blame is
-    multiplied by the same small knobs on the way back) no blame either. Too big and they explode.
+    multiplied by the same small knobs on the way back) no blame either. Too big and they grow layer after layer
+    (about 13 times bigger by layer 6).
     `√(2 / n)` keeps them steady. That's why deep networks need a reasoned start.
 
     ## Small batches
@@ -280,7 +288,12 @@ def _():
 def _():
     mo.md(r"""
     Here is a full training function built from these pieces. It starts with He sizes, and for
-    each epoch takes one step per batch. (Ignore `decay` for now; it's 0 until the last section.)
+    each epoch takes one step per batch. (Ignore `decay` for now; it's 0 until the last section.
+    `len(X)` on a matrix is its number of rows.)
+
+    The cell after it trains for 5 epochs and times it with `time.perf_counter()`, a clock in
+    seconds. `forward(X_test, *knobs)` passes the four knobs in `knobs` as four separate inputs;
+    the `*` unpacks them.
     """)
     return
 
@@ -315,16 +328,15 @@ def _(X, X_test, Y, test_labels):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    (`forward(X_test, *knobs)` passes the four knobs in `knobs` as four separate inputs; the `*`
-    unpacks them.) Five epochs reach about **94%**, as chapter 07's 300 full steps did, in a
-    fraction of the time: 500 small steps cost as much as 5 full ones. Each small step is noisier,
+    Five epochs reach about **94%**, as chapter 07's 300 full steps did. The second number is
+    the seconds it took: well under one, against about 10 for chapter 07. 500 small steps cost as much as 5 full ones. Each small step is noisier,
     but there are 100 times more of them. This is how every large model is trained: nobody
     computes a slope over a whole dataset of billions of examples.
 
     ## Momentum: remember the direction
 
-    Back to chapter 02's problem. On Mia's raw temperatures the slope for `w` is huge (each degree
-    multiplies it) and the slope for `b` is small, so a learning rate small enough for `w` makes
+    Back to chapter 02's problem. On Mia's raw temperatures the slope for `w` is huge (each error is
+    multiplied by the temperature, which is in the tens) and the slope for `b` is small, so a learning rate small enough for `w` makes
     `b` crawl. Let's pack both knobs into one vector `k = [w, b]` and watch plain steps from
     chapter 02's start, `[6, 0]`, at the largest learning rate that doesn't blow up (0.0016):
     """)
@@ -366,10 +378,10 @@ def _():
 
     > `velocity = 0.9 × velocity + slope`, then `knob = knob − rate × velocity`
 
-    If the slope keeps pointing the same way, the velocity grows (up to 10 times the slope: 1 +
-    0.9 + 0.81 + … = 10), so slow, steady progress speeds up. If the slope keeps flipping back
-    and forth, the flips cancel in the velocity, which calms down jittery knobs. A running sum
-    that fades old values like this is called a **moving average**.
+    If the slope stays the same, the velocity grows until it stops changing, that is until
+    `V = 0.9 × V + slope`. Then `0.1 × V = slope`, so `V = 10 × slope`: steady progress
+    becomes up to 10 times faster. (If the slope flips back and forth, the flips partly cancel
+    in the velocity instead.)
 
     ## Exercise 3: momentum_step
 
@@ -413,21 +425,26 @@ def _():
     ## Adam: a step size for every knob
 
     Momentum helps, but `w` and `b` still share one learning rate. **Adam** gives each knob its
-    own scale. Next to the moving average of the slope, it keeps a moving average of the slope
-    **squared**, and divides by its square root, the knob's recent typical slope size:
+    own scale. It keeps an **average** of recent slopes, `m = 0.9 × m + 0.1 × slope`. This is
+    momentum's velocity times 0.1, which makes it a true average: if the slope stays the same,
+    `m` settles at the slope itself (`0.1 × m = 0.1 × slope`), not 10 times it. Next to it, Adam
+    keeps an average of the slope **squared**, and divides by its square root, the knob's recent
+    typical slope size:
 
     > step = rate × (average slope) / √(average squared slope)
 
     For a knob with huge slopes (`w`), the division makes the step smaller; for a knob with small
     slopes (`b`), bigger. Every knob ends up moving at a similar pace, about `rate` per step at
-    first. That is exactly what we did by hand when we rescaled temperatures in chapters 04 and
+    first. (So below, with rate 1.0, `b` moves about 1 per step: it needs about 107 steps to
+    reach −107.) That is exactly what we did by hand when we rescaled temperatures in chapters 04 and
     05, now done automatically, knob by knob.
 
     One detail: both averages start at 0, so in the first steps they're too small (after one step
     the average slope is only `0.1 × slope`). Adam corrects this by dividing by `1 − 0.9^t` and
-    `1 − 0.999^t`, where `t` counts the steps from 1: after step 1 that divides by 0.1 and 0.001,
+    `1 − 0.999^t` (in code, powers are `**`: `0.9 ** t`), where `t` counts the steps from 1: after step 1 that divides by 0.1 and 0.001,
     which undoes the shrinking exactly; as `t` grows, the correction fades to dividing by 1. (The
-    `1e-8`, that is 0.00000001, only prevents dividing by zero.)
+    `1e-8`, that is 0.00000001, is there so we never divide by zero; it changes the answer only
+    in the 9th digit or so, and the check allows for that.)
 
     ## Exercise 4: adam_step
 
@@ -437,6 +454,9 @@ def _():
     2. `v = 0.999 * v + 0.001 * grad * grad` (average squared slope)
     3. `m_hat = m / (1 - 0.9 ** t)` and `v_hat = v / (1 - 0.999 ** t)`
     4. `return w - rate * m_hat / (np.sqrt(v_hat) + 1e-8), m, v`
+
+    After the check, a cell runs 500 Adam steps on Mia's problem. `range(1, 501)` counts
+    1, 2, …, 500, so `t` starts at 1.
     """)
     return
 
@@ -468,9 +488,8 @@ def _():
 def _():
     mo.md(r"""
     After the same 500 steps, Adam sits on the best possible line: `w` about 11.9, `b` about
-    −107, loss about 26.8, on raw temperatures, without any rescaling. (`range(1, 501)` counts
-    1, 2, …, 500, so `t` starts at 1.) Adam, or its close cousin AdamW, trains almost every large
-    model today, including the transformers later in this course.
+    −107, loss about 26.8, on raw temperatures, without any rescaling. Adam (with small changes) trains almost every
+    large model today, including the transformers later in this course.
 
     ## Learning or memorising?
 
@@ -502,15 +521,18 @@ def _():
     looks perfect and says nothing about new data. It's why we always keep test data aside.
 
     **Weight decay** is a standard counter-measure. Add a small penalty for big knobs to the
-    loss: `(decay / 2) × (sum of every knob squared)`. By chapter 02's rule, the slope of
-    `(decay / 2) × w²` is `decay × w`, so the step rule becomes
+    loss: `(decay / 2) × (sum of every weight squared)`, over the weights in `W1` and `W2`
+    (biases are usually left alone, hence the name *weight* decay). Nudging one weight `w` moves
+    only its own square; the others don't change. By chapter 02's rule, the slope of `w²` is
+    `2 × w`, so the slope of `(decay / 2) × w²` is `(decay / 2) × 2 × w = decay × w`, and the
+    step rule becomes
 
-    > `knob = knob − rate × (slope + decay × knob)`
+    > `weight = weight − rate × (slope + decay × weight)`
 
-    which is the `+ decay * W1` in `train`: every step also shrinks every knob a little towards
-    0. To keep a knob big, the data must keep asking for it. Large knobs built just to fit one odd
-    picture fade away. Here it nudges the test accuracy up a little (the last number above). The
-    strongest cure is simpler: **more data**. The same network on all 10,000 pictures got about
+    which is the `+ decay * W1` in `train`: every step also shrinks every weight a little towards
+    0, so a weight stays big only if the data keeps asking for it. Here the effect is tiny: the
+    last number above is 87.4% against 87.25%, three more pictures out of 2,000. Weight decay
+    matters more in big models trained for a long time. The strongest cure is simpler: **more data**. The same network on all 10,000 pictures got about
     94%.
 
     ## What's next
@@ -525,7 +547,7 @@ def _():
     - measure spread with the variance, and its square root, the typical size
     - explain why starting at zero fails, and derive the start `√(2 / n)`
     - train with shuffled mini-batches and epochs, using slices and `rng.permutation`
-    - speed up training with momentum (a moving average of slopes)
+    - speed up training with momentum (a velocity that adds up recent slopes)
     - give every knob its own pace with Adam, including its start-up correction
     - recognise overfitting from training and test scores, and counter it with weight decay or
       more data

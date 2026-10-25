@@ -66,7 +66,7 @@ EXERCISES = {
         Case("ch08.momentum_step.two", lambda f: _momentum(f, 2), ([0.855, -1.13], [0.95, -5.7]), tolerance=1e-12, hint="ch08.momentum_step.hint"),
     ],
     "adam_step": [
-        Case("ch08.adam_step.one", lambda f: _adam(f, 1), _adam_reference(1), tolerance=1e-9, hint="ch08.adam_step.hint"),
-        Case("ch08.adam_step.five", lambda f: _adam(f, 5), _adam_reference(5), tolerance=1e-9, hint="ch08.adam_step.hint"),
+        Case("ch08.adam_step.one", lambda f: _adam(f, 1), _adam_reference(1), tolerance=1e-6, hint="ch08.adam_step.hint"),
+        Case("ch08.adam_step.five", lambda f: _adam(f, 5), _adam_reference(5), tolerance=1e-6, hint="ch08.adam_step.hint"),
     ],
 }

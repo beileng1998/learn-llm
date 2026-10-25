@@ -120,7 +120,7 @@ def _():
     each detector that fires adds its share, and a silent one adds nothing.
 
     The scores then go through chapter 06's softmax and cross-entropy, unchanged. Here they are
-    again, ready to use:
+    again, with chapter 06's `accuracy` and `one_hot`. They are finished; don't change them:
     """)
     return
 
@@ -186,9 +186,8 @@ def _():
     Without the ReLU, step 3 would compute `(X @ W1 + b1) @ W2 + b2`. Leave the `b`s aside for a
     moment: `@` can be grouped either way, like ordinary multiplication, so
     `(X @ W1) @ W2 = X @ (W1 @ W2)`, and `W1 @ W2` is a single `(784, 10)` matrix: one template per
-    digit again. (The `b`s add up to one fixed row of ten numbers, `b1 @ W2 + b2`, chapter 06's
-    `b`.) Two layers without a bend are no better than one. Check the grouping with small random
-    matrices:
+    digit again. Two layers without a bend are no better than one. Check the grouping with small
+    random matrices (the new tools in this cell are explained right after it):
     """)
     return
 
@@ -270,7 +269,7 @@ def _():
     **`H`.** This one is new: chapter 06 never needed the slope for its *inputs*. Take one hidden
     value, `H[i, j]` (picture `i`, detector `j`). It appears in all ten scores of picture `i`:
     written out, `S[i, c] = H[i, 0] × W2[0, c] + … + H[i, 63] × W2[63, c] + b2[c]`, so by chapter
-    03's product rule, nudging `H[i, j]` moves `S[i, c]` by `W2[j, c]` per unit: that's the local
+    03's rule for a product (in `a × c`, nudging `a` moves the result by `c`), nudging `H[i, j]` moves `S[i, c]` by `W2[j, c]` per unit: that's the local
     slope. One value feeding ten arrows: **blames add** (chapter 03). So
 
     > blame of `H[i, j]` = `G[i, 0] × W2[j, 0] + G[i, 1] × W2[j, 1] + … + G[i, 9] × W2[j, 9]`
@@ -279,8 +278,7 @@ def _():
     **column** `j` of `W2.T`. Since entry `[i, j]` of `A @ B` is row `i` of `A` dotted with
     column `j` of `B`, that's entry `[i, j]` of `G @ W2.T`. For every `i` and `j` at once:
     `dH = G @ W2.T`, with shape
-    `(n, 10) @ (10, 64) = (n, 64)`, the same shape as `H`. Good: every value has a blame of its own
-    shape.
+    `(n, 10) @ (10, 64) = (n, 64)`, the same shape as `H`.
 
     **The bend.** `H = relu(Z)`, position by position. The slope of `relu(z)`: where `z` is
     positive, `relu(z) = z`, slope 1; where `z` is negative, `relu(z) = 0`, slope 0. (Exactly at
@@ -363,14 +361,15 @@ def _(H0, S0, W1_start, W2_start, X, Y, Z0, b1_start, b2_start):
 def _():
     mo.md(r"""
     Items 0 and 1 are the nudge and the formula for `W1[406, 0]`; items 2 and 3 for `W2[5, 3]`.
-    They agree to three or four digits (a nudge is never exact), in both layers. (We picked a pixel near the middle on
-    purpose: a corner pixel is white in every picture, so its knobs never matter and their slope
-    is exactly 0, which wouldn't test much.)
+    They agree in their first three or four digits after the zeros (−0.01332… and −0.01333…;
+    0.0029739… twice): a nudge is never exact. (A corner pixel would give slope exactly 0 and
+    test nothing, so we picked one in the middle.)
 
     ## Training
 
     Same loop as chapter 06, with four sets of knobs instead of two. 300 steps over all 10,000
-    pictures take a few seconds more than chapter 06, so the training waits for the button.
+    pictures take a while (up to a minute), so the training waits for the button. The first line
+    of the training cell, `mo.stop(...)`, only makes it wait for the button.
     """)
     return
 
@@ -424,9 +423,9 @@ def _(W1):
 def _():
     mo.md(r"""
     They look much noisier than chapter 06's templates, and the noise is telling. Near the edges,
-    every picture is white paper, so those pixels are 0 in every picture: their knobs never take
-    any blame (the slope `X.T @ dZ` multiplies by those zeros) and keep their random starting
-    values. Towards the middle, where the ink is,
+    almost every picture is white paper: many of those pixels are 0 in every picture, and the
+    rest almost always are. Their knobs take little or no blame (the slope `X.T @ dZ` multiplies
+    by those zeros) and keep (nearly) their random starting values. Towards the middle, where the ink is,
     you can make out smoother patches: pieces of strokes that each detector learned to respond
     to, without anyone telling it what to look for. The second layer learns which mix of
     detectors makes each digit.

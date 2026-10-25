@@ -79,13 +79,12 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | mask | 掩码 | 07 |
 | classifier | 分类器 | 06 |
 | variance | 方差 | 08 |
-| typical size | 典型大小 | 08 |
+| typical size | 典型大小 | 07 |
 | He initialisation | He 初始化 | 08 |
 | batch / mini-batch | 批 / 小批量 | 08 |
 | epoch | 轮次 | 08 |
 | slice | 切片 | 08 |
 | momentum | 动量 | 08 |
 | velocity | 速度 | 08 |
-| moving average | 滑动平均 | 08 |
 | overfitting | 过拟合 | 08 |
 | weight decay | 权重衰减 | 08 |
