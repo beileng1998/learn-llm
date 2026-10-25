@@ -71,3 +71,9 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | transpose | 转置 | 06 |
 | template | 模板 | 06 |
 | test set | 测试集（测试图片） | 06 |
+| neural network | 神经网络 | 07 |
+| bend (ReLU) | 弯折 | 07 |
+| hidden layer | 隐藏层 | 07 |
+| detector (hidden unit) | 探测器 | 07 |
+| seed (random) | 种子 | 07 |
+| mask | 掩码 | 07 |

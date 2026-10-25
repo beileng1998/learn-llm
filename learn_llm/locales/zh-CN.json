@@ -140,5 +140,16 @@
   "ch06.cross_entropy.hint": "提示：`return -np.mean(np.sum(Y * np.log(P), axis=1))`：负号，再对所有图片求“正确数字份额的 log”的均值。",
   "ch06.gradient.tiny": "三张图、两个像素、三个数字",
   "ch06.gradient.zero": "一张图 [1, 2]，数字是 1，所有旋钮为 0：dW = [[0.5, -0.5], [1, -1]]，db = [0.5, -0.5]",
-  "ch06.gradient.hint": "提示：`P = softmax(X @ W + b)`，`G = (P - Y) / len(X)`，然后 `return X.T @ G, np.sum(G, axis=0)`（`axis=0` 是沿着每一列往下加）。"
+  "ch06.gradient.hint": "提示：`P = softmax(X @ W + b)`，`G = (P - Y) / len(X)`，然后 `return X.T @ G, np.sum(G, axis=0)`（`axis=0` 是沿着每一列往下加）。",
+  "ch07.relu.mixed": "relu([[-2, 0, 3], [1.5, -0.5, 0]]) 是 [[0, 0, 3], [1.5, 0, 0]]",
+  "ch07.relu.shape": "结果和 Z 的形状相同",
+  "ch07.relu.hint": "提示：`return np.maximum(Z, 0)`：逐个位置取这个数和 0 中较大的那个。",
+  "ch07.forward.z": "在一个很小的网络上：Z = X @ W1 + b1",
+  "ch07.forward.h": "H = relu(Z)：负数都变成 0",
+  "ch07.forward.s": "S = H @ W2 + b2",
+  "ch07.forward.hint": "提示：`Z = X @ W1 + b1`，`H = relu(Z)`，`S = H @ W2 + b2`，然后 `return Z, H, S`（三个都要，按这个顺序）。",
+  "ch07.backward.second": "第二层的斜率 dW2 和 db2",
+  "ch07.backward.first": "第一层的斜率 dW1 和 db1",
+  "ch07.backward.second_hint": "提示：`G = (softmax(S) - Y) / len(X)`，然后 `dW2 = H.T @ G`、`db2 = np.sum(G, axis=0)`；四个都要返回：`dW1, db1, dW2, db2`。",
+  "ch07.backward.first_hint": "提示：`dH = G @ W2.T`，然后 `dZ = dH * (Z > 0)`（弯折只在 Z > 0 的地方把责任传过去），再 `dW1 = X.T @ dZ`、`db1 = np.sum(dZ, axis=0)`。"
 }

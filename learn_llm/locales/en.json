@@ -140,5 +140,16 @@
   "ch06.cross_entropy.hint": "Tip: `return -np.mean(np.sum(Y * np.log(P), axis=1))`: the minus sign, then the mean over pictures of each picture's log share for its right digit.",
   "ch06.gradient.tiny": "three pictures, two pixels, three digits",
   "ch06.gradient.zero": "one picture [1, 2] of digit 1, all knobs 0: dW = [[0.5, -0.5], [1, -1]], db = [0.5, -0.5]",
-  "ch06.gradient.hint": "Tip: `P = softmax(X @ W + b)`, `G = (P - Y) / len(X)`, then `return X.T @ G, np.sum(G, axis=0)` (`axis=0` adds down each column)."
+  "ch06.gradient.hint": "Tip: `P = softmax(X @ W + b)`, `G = (P - Y) / len(X)`, then `return X.T @ G, np.sum(G, axis=0)` (`axis=0` adds down each column).",
+  "ch07.relu.mixed": "relu([[-2, 0, 3], [1.5, -0.5, 0]]) is [[0, 0, 3], [1.5, 0, 0]]",
+  "ch07.relu.shape": "the result has the same shape as Z",
+  "ch07.relu.hint": "Tip: `return np.maximum(Z, 0)`: position by position, the larger of the number and 0.",
+  "ch07.forward.z": "Z = X @ W1 + b1 on a tiny network",
+  "ch07.forward.h": "H = relu(Z): the negative values become 0",
+  "ch07.forward.s": "S = H @ W2 + b2",
+  "ch07.forward.hint": "Tip: `Z = X @ W1 + b1`, `H = relu(Z)`, `S = H @ W2 + b2`, then `return Z, H, S` (all three, in that order).",
+  "ch07.backward.second": "slopes of the second layer, dW2 and db2",
+  "ch07.backward.first": "slopes of the first layer, dW1 and db1",
+  "ch07.backward.second_hint": "Tip: `G = (softmax(S) - Y) / len(X)`, then `dW2 = H.T @ G` and `db2 = np.sum(G, axis=0)`; return all four as `dW1, db1, dW2, db2`.",
+  "ch07.backward.first_hint": "Tip: `dH = G @ W2.T`, then `dZ = dH * (Z > 0)` (the bend passes blame only where Z > 0), then `dW1 = X.T @ dZ` and `db1 = np.sum(dZ, axis=0)`."
 }

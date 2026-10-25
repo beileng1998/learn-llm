@@ -81,6 +81,19 @@ uses = [
     "centering-inputs", "chart-reading", "tuple",
 ]
 
+[chapters.07]
+introduces = [
+    "model-capacity", "relu", "piecewise-line", "hidden-layer", "neural-network",
+    "matmul-grouping", "random-generator", "random-init", "input-gradient", "relu-slope",
+    "boolean-mask", "two-layer-backprop",
+]
+uses = [
+    "softmax", "cross-entropy", "accuracy", "one-hot", "matrix-times-matrix", "transpose",
+    "softmax-gradient", "numpy-sum", "axis", "keepdims", "chain-rule", "blames-add",
+    "local-slope", "gradient-check", "nudge", "gradient-descent", "learning-rate", "indexing",
+    "reshape", "numpy-zeros", "builtin-range", "curve-model", "comparing-arrays", "test-set",
+]
+
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
 error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
@@ -184,3 +197,15 @@ log-slope = "the slope of log x is 1 / x"
 softmax-gradient = "the slope of the surprise for each score is p − 1 for the right answer and p for the others: p − y"
 transpose = "X.T swaps rows and columns; X.T @ G gives the slope of every knob in W"
 numpy-sum = "np.sum(A, axis=0) adds down each column; axis=1 across each row"
+model-capacity = "a single weighted sum per answer can't express 'this or that'; training longer doesn't fix it"
+relu = "relu(z) = z when z > 0, else 0: np.maximum(Z, 0)"
+piecewise-line = "a line plus ReLU pieces bends where you choose; enough bends follow any shape"
+hidden-layer = "H = relu(X @ W1 + b1): detectors in between input and scores"
+neural-network = "layers of weighted sums with bends: X → H → scores"
+matmul-grouping = "(X @ W1) @ W2 = X @ (W1 @ W2): two layers without a bend equal one"
+random-generator = "rng = np.random.default_rng(0); rng.normal(0, 0.05, shape): seeded random numbers around 0"
+random-init = "networks start from small random knobs, not zeros"
+input-gradient = "dH = G @ W2.T: a value feeding many scores collects their blames"
+relu-slope = "ReLU passes blame where z > 0 (slope 1) and blocks it elsewhere (slope 0)"
+boolean-mask = "multiplying by Z > 0 counts True as 1 and False as 0"
+two-layer-backprop = "G, dW2 = H.T @ G, dH = G @ W2.T, dZ = dH * (Z > 0), dW1 = X.T @ dZ"
