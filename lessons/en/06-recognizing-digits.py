@@ -54,8 +54,9 @@ def _():
     To pick one item out of an array (or a list), put its position in square brackets, counting
     from 0: `train_images[0]` is the first picture, `train_labels[0]` its label. For a matrix,
     give the row and then the column: for a matrix `M`, `M[2, 5]` is the number in row 2,
-    column 5. So
-    `train_images[0][14]` is row 14 of the first picture, a horizontal line across its middle:
+    column 5. One position on a matrix gives a whole row: `train_images[0]` is the first picture
+    (a 28 × 28 matrix), so `train_images[0][14]` is row 14 of it, a horizontal line across its
+    middle:
     """)
     return
 
@@ -70,8 +71,10 @@ def _(train_images, train_labels):
 def _(train_images, train_labels):
     mo.vstack([
         mo.md(r"""
-    Label 6, and a row that is white (0) except where the pen crossed it. Here are the first 8
-    pictures, drawn from their numbers, with their labels:
+    Label 6 (NumPy shows a single number with its kind around it: `np.uint8(6)` is a whole number
+    from 0 to 255, and later `np.float64(...)` is a decimal; only the number inside matters), and
+    a row that is white (0) except where the pen crossed it. Here are the first 8 pictures, drawn
+    from their numbers, with their labels:
     """),
         images.digits(train_images[:8], train_labels[:8]),
     ])
@@ -88,6 +91,7 @@ def _():
     it keeps the same numbers in the same order and only changes the shape. We also divide by
     255, so every pixel is between 0 (white) and 1 (black), for the same reason we rescaled
     temperatures in chapters 04 and 05: small numbers of similar size suit one learning rate.
+    The shapes below are `(10000, 784)` and `(2000, 784)`: one row of 784 numbers per picture.
     """)
     return
 
@@ -149,8 +153,8 @@ def _():
     guessed digit) per picture. (`axis=0` would work down each column instead; `axis=1` works
     across each row.)
 
-    To score the guesses, compare them with the labels: `guesses == labels` compares position by
-    position and gives an array of `True` (right) and `False` (wrong). `np.mean` of that counts
+    To score the guesses, compare them with the labels. `==` (two equals signs) asks "is it
+    equal?", while a single `=` stores. `guesses == labels` compares position by position and gives an array of `True` (right) and `False` (wrong). `np.mean` of that counts
     each `True` as 1 and each `False` as 0, so it gives the **share** of right guesses: the
     model's **accuracy**.
 
@@ -192,7 +196,7 @@ def _():
     We want gradient descent to improve the knobs, so we need a loss with useful slopes.
     Accuracy doesn't have them: nudge one knob a tiny bit and the scores move a tiny bit, but the
     biggest score almost always stays the biggest. No guess changes, so the accuracy doesn't move
-    at all: its slope is 0 almost everywhere, and the step rule never moves.
+    at all: its slope is 0 almost everywhere, and the step rule never changes the knobs.
 
     We need a smooth measure instead: not just *which* digit wins, but **how sure** the model
     is of each. If scores could be turned into shares that add up to 1, like "0.7 for 3, 0.2
@@ -243,7 +247,8 @@ def _():
     change the shares at all: by the rule above, `e^(s − m) = e^s / e^m`, so every `e^` is divided
     by the same `e^m`, and dividing every part and the total by the same number leaves the shares
     unchanged. After subtracting, the largest score is 0, so `e^` of it is 1 and nothing gets too
-    big for the computer.
+    big for the computer. (If you leave this step out, NumPy also prints a warning saying
+    "overflow": that's this problem.)
 
     ### Rows, columns and `keepdims`
 
@@ -262,6 +267,10 @@ def _():
     1. `S = S - np.max(S, axis=1, keepdims=True)`
     2. `E = np.exp(S)`
     3. `return E / np.sum(E, axis=1, keepdims=True)`
+
+    Below, the cell after the check tries it on one picture's scores. Note the two pairs of
+    brackets, `[[2, 1, 0.1]]`: a matrix with one row (one picture), because softmax works row by
+    row.
     """)
     return
 
@@ -295,7 +304,7 @@ def _():
     a wrong answer should pay a lot.
 
     **log** does this. `log` undoes `e^`: `log(e^a) = a`, so `log x` answers "e to the power of
-    what gives x?". `log 1 = 0` (because `e^0 = 1`), and for shares below 1 the log is negative
+    what gives x?" (in NumPy, `np.log(x)`). `log 1 = 0` (because `e^0 = 1`), and for shares below 1 the log is negative
     (only a negative power of e is below 1), heading down without limit as the share approaches
     0. So we use **minus** the log of the
     right digit's share, called the **surprise**:
@@ -346,7 +355,8 @@ def _(test_labels, train_labels):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The first picture is a 6, so its one-hot row has its single 1 at position 6.
+    The first picture is a 6, so its one-hot row has its single 1 at position 6 (counting from
+    0: the seventh number). The dots, as in `1.`, mean the numbers are stored as decimals.
 
     ## Exercise 3: cross_entropy
 
@@ -416,7 +426,8 @@ def _():
 
     ## The slope of the loss for each score
 
-    Take one picture with three digits and scores `s0, s1, s2`, where digit 0 is right. Write
+    To keep it short, pretend there are only three possible digits, 0, 1 and 2. Take one picture
+    with scores `s0, s1, s2`, where 0 is the right digit. Write
     `T = e^s0 + e^s1 + e^s2` for the total, so the right share is `p0 = e^s0 / T`, and the
     surprise is `L = −log(e^s0 / T)`.
 
@@ -481,7 +492,8 @@ def _():
     a matrix of shape `(n, 10)`, one row per picture, one column per digit: `G[i, c]` is the blame
     of score `S[i, c]`.
 
-    Now from scores to knobs, exactly as in chapter 05. The knob `W[j, c]` (pixel `j`, digit `c`)
+    Now from scores to knobs, with the same idea as in chapter 05 (there the blame vector came
+    first, `(2 * e) @ X`; here the shapes call for a different arrangement, worked out below). The knob `W[j, c]` (pixel `j`, digit `c`)
     multiplies pixel `j` in digit `c`'s score, for every picture. So its slope is: for each
     picture, the score's blame `G[i, c]` times the local slope `X[i, j]` (in `X[i, j] × W[j, c]`,
     nudging `W[j, c]` moves the score by `X[i, j]` per unit), all added up, because `W[j, c]`
@@ -528,7 +540,7 @@ def _():
     mo.md(r"""
     A last check by nudging, on the real pictures: the knob for pixel 300 and digit 3, at the
     all-zero start. `nudge` is all zeros except `h` in row 300, column 3, so `W_zero + nudge`
-    nudges only that one knob. (It uses your exercises, so it needs all four.)
+    nudges only that one knob. (It uses Exercises 2 to 4.)
     """)
     return
 
@@ -578,8 +590,10 @@ def _(X, X_test, Y, test_labels, train_labels):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The loss falls from 2.303 to about 0.38, and the model now gets about **90%** of the test
-    pictures right, up from 10%. It reads handwriting it has never seen.
+    The loss falls from 2.303 to about 0.38, and the model now gets about 0.90 (**90%**) of the
+    test pictures right, up from 10%. It reads handwriting it has never seen. Here training and
+    test accuracy are almost equal: a model this simple can't memorise its training pictures.
+    Bigger models can, and chapter 08 shows what that looks like.
 
     ## What the model learned
 

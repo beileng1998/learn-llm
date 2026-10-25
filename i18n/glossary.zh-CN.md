@@ -77,3 +77,4 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | detector (hidden unit) | 探测器 | 07 |
 | seed (random) | 种子 | 07 |
 | mask | 掩码 | 07 |
+| classifier | 分类器 | 06 |

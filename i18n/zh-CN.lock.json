@@ -5,6 +5,6 @@
   "03-blame-flows-backwards.py": "sha256:1aa9907951cf567b4da013193b26f4ae6033630f30cfaa1ad7d37eea5f20c49f",
   "04-keeping-the-books.py": "sha256:c4367b0660545e782548c58032c92b4332d11e280e2a2df4dad97c6cbc2b255f",
   "05-many-numbers-at-once.py": "sha256:cdf80bd779eadea2b26dd6169a65260996bbf5d1ef9fc3eb7ab477dc5209738c",
-  "06-recognizing-digits.py": "sha256:d4ceaf1311c22dae40a6bd0ee78ba478be031d1ddd599160ccf4eb8e94140c0b",
+  "06-recognizing-digits.py": "sha256:be93e585f0a464b8eb5e331d9dbdb9bb15acf6ddd4a1c6f1a84ce7429474e7d3",
   "07-neural-networks.py": "sha256:0de10087d340a226b8e02d03884fd5be99c5b5447717be00036e432b053a576e"
 }
