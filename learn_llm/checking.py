@@ -37,7 +37,7 @@ class Result:
 
 
 def _same(got, expected, tolerance) -> bool:
-    if isinstance(expected, tuple):
+    if isinstance(expected, (tuple, list)):
         return isinstance(got, (tuple, list)) and len(got) == len(expected) and all(
             _same(g, e, tolerance) for g, e in zip(got, expected)
         )
@@ -91,10 +91,12 @@ def explain(result: Result, locale: str) -> str:
     if result.status == ERROR:
         line = t("check.case_error", locale, what=what, error=result.error)
         hint_key = f"error.{result.error_type}"
-        if "'Value'" in result.error:  # an engine box used where a number was expected (ch04 on)
-            hint_key += ".Value"
-        hint = t(hint_key, locale)
-        return f"{line} {hint}" if hint != hint_key else line
+        for word in ("Value", "append"):  # a more specific hint, when the error names one of these
+            if f"'{word}'" in result.error and t(f"{hint_key}.{word}", locale) != f"{hint_key}.{word}":
+                hint_key += f".{word}"
+                break
+        hints = [h for h in (t(hint_key, locale), t(result.case.hint, locale) if result.case.hint else "") if h and h != hint_key]
+        return " ".join([line, *hints])
     if result.got is None:
         return t("check.case_none", locale, what=what)
     line = t("check.case_fail", locale, what=what, got=repr(result.got), expected=repr(result.case.expected))

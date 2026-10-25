@@ -37,7 +37,7 @@ that covers the essential knowledge of CS231n → CS224N → CS336 → tiny-llm.
 | 02 | Going downhill | Gradient descent with nudged slopes; exact derivatives | Rates, slope, limits (as closing in), derivative rules | 231n optimization |
 | 03 | Blame flows backwards | Backprop by hand and in plain code; exact gradients | Computation graphs, chain rule, blames add, gradient check | 231n backprop |
 | 04 | Keeping the books | A small automatic backprop engine (scalar autograd) | Classes, objects, recording a calculation, reverse order | 231n backprop |
-| 05 | Many numbers at once | Vectorized version with NumPy | Vectors, matrices, matmul, shapes/broadcasting | 231n numpy |
+| 05 | Many numbers at once | A model with several inputs; its loss and gradient in NumPy | Vectors, dot product, matrices, shapes, `@`, broadcasting, NumPy | 231n numpy |
 | 06 | Recognizing digits | Softmax classifier on MNIST | Probability, exp/log, cross-entropy | 231n softmax/SVM |
 | 07 | Neural networks | MLP with matrix backprop | Nonlinearity, gradient of matmul | 231n NN, A1/A2 |
 | 08 | Training that works | Optimizers, init, norms, regularization | Variance, moving averages | 231n training, A2 |
@@ -112,6 +112,7 @@ On a fresh clone, on Ubuntu and macOS CI runners with no GPU:
 - Web app: marimo notebooks (user, 2026-10-24)
 - v0.1: chapters 00–03 plus the one-command environment (user, 2026-10-24); acceptance check green in CI on Ubuntu, macOS, Windows (PR #1)
 - New chapter 04 "Keeping the books" (automatic engine) before "Many numbers at once"; later chapters shift by one (user, 2026-10-25)
+- NumPy (`numpy>=2.5`, BSD-3-Clause, no dependencies of its own) is the second runtime dependency, from chapter 05; Python floor raised to 3.12, which NumPy 2.5 needs (user, 2026-10-25)
 
 - Installer: uv (pinned version) behind `start.sh` / `make start`; Windows uses `start.cmd` → `start.ps1` (user, 2026-10-24)
 

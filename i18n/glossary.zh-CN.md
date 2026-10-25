@@ -50,3 +50,12 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | forward calculation | 正向计算（口语“往前算”） | 04 |
 | automatic differentiation | 自动微分 | 04 |
 | topological order | 拓扑序 | 04 |
+| vector | 向量 | 05 |
+| dot product | 点积 | 05 |
+| matrix | 矩阵 | 05 |
+| row / column | 行 / 列 | 05 |
+| shape | 形状 | 05 |
+| library | 库 | 05 |
+| array | 数组 | 05 |
+| elementwise / position by position | 逐个位置 | 05 |
+| broadcasting | 广播 | 05 |
