@@ -29,16 +29,13 @@ Your work is saved in `my-work/`, your own copy of every lesson. Updating the co
 overwrites it. To restart a chapter from scratch, delete its file in `my-work/` and start
 again.
 
-Each chapter has shared **Previous chapter / Course index / Next chapter** navigation.
-Three compact buttons stay in the bottom-left corner. Hover a button to see
-its destination; the first and last chapters keep unavailable buttons disabled.
-The start script adds its navigation cell to new and existing learner copies without
-rewriting your lesson text or answers. Before adding it, it keeps a copy of the original
-in `my-work/.navigation-backups/`. Starting again does not add duplicate navigation cells.
-This navigation is installed by the course launcher; directly editing the source lessons
-with `marimo edit lessons/...` does not install it.
-If the editor blocks navigation while edits are pending, let autosave finish or save
-the notebook before switching chapters.
+Every chapter ends with links to the previous and next chapters, and a small bar in the
+bottom-left corner (`← 04 · All chapters · 06 →`) moves between chapters from anywhere on the
+page. The start script adds this navigation to your copies, including ones you already
+started, without touching your answers; it keeps the original in `my-work/.navigation-backups/`
+first, and never adds it twice. (Editing the source lessons directly with
+`marimo edit lessons/...` shows no navigation.) If the editor asks before leaving a chapter,
+your latest edit hasn't been saved yet: wait a moment for autosave, or save, then switch.
 
 ## How it's different
 

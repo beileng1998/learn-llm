@@ -1,77 +1,156 @@
-/* One compact control group, above the status bar and below editor menus. */
-.marimo-cell:has(.learn-llm-navigation) {
-  /* Hovered cells rise to 30; editor menus start at 50. */
+/* Chapter navigation. Colours come from marimo's theme variables, so light and dark
+   mode follow the editor; the fallbacks are marimo's light-theme values. */
+
+/* The cell holding the fixed bar must sit above hovered cells (30), below menus (50). */
+.marimo-cell:has(.lln-bar) {
   z-index: 40;
 }
 
-.learn-llm-navigation {
+/* End of chapter: previous and next, by name. */
+.lln-end {
+  margin: 2.5rem 0 1rem;
+  font-size: 0.875rem;
+}
+
+.lln-end__cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.lln-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 4.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  background: var(--card, #fff);
+  color: var(--foreground, #0f172a);
+  text-decoration: none;
+  transition: border-color 120ms ease-out, background-color 120ms ease-out;
+}
+
+.lln-card--next,
+.lln-card--later {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.lln-card--empty {
+  visibility: hidden;
+}
+
+.lln-card--later {
+  justify-content: center;
+  border-style: dashed;
+  background: transparent;
+  color: var(--muted-foreground, #64748b);
+}
+
+a.lln-card:hover {
+  border-color: var(--link, #0b68cb);
+  background: var(--accent, #edf6ff);
+  text-decoration: none;
+}
+
+a.lln-card:hover .lln-card__title {
+  color: var(--link, #0b68cb);
+}
+
+.lln-card__caption {
+  color: var(--muted-foreground, #64748b);
+  font-size: 0.75rem;
+}
+
+.lln-card__title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.lln-end__home {
+  display: block;
+  width: max-content;
+  margin: 0.875rem auto 0;
+  color: var(--muted-foreground, #64748b);
+  text-decoration: none;
+}
+
+.lln-end__home:hover {
+  color: var(--link, #0b68cb);
+  text-decoration: underline;
+}
+
+/* Anywhere on the page: a small bar in the corner, clear of marimo's own controls. */
+.lln-bar {
   position: fixed;
   left: 56px;
   bottom: calc(36px + env(safe-area-inset-bottom, 0px));
   z-index: 40;
   display: flex;
-  width: max-content;
   align-items: center;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid color-mix(in srgb, var(--foreground, #0f172a) 9%, transparent);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--background, #fff) 68%, transparent);
-  color: var(--foreground, #0f172a);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  backdrop-filter: blur(10px) saturate(120%);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
+  gap: 1px;
+  padding: 3px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 9px;
+  background: var(--card, #fff);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
 }
 
-.learn-llm-navigation .learn-llm-navigation__button {
+.lln-bar__button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  flex: 0 0 34px;
-  height: 26px;
-  padding: 0;
-  border: 0;
+  min-width: 2.75rem;
+  height: 1.75rem;
+  padding: 0 0.5rem;
   border-radius: 6px;
-  background: transparent;
-  color: inherit;
+  color: var(--foreground, #0f172a);
   text-decoration: none;
-  cursor: pointer;
+  white-space: nowrap;
   transition: background-color 120ms ease-out;
 }
 
-.learn-llm-navigation .learn-llm-navigation__button:hover {
-  background: color-mix(in srgb, var(--foreground, #0f172a) 7%, transparent);
+.lln-bar__home {
+  padding: 0 0.625rem;
+  border-inline: 1px solid var(--border, #e2e8f0);
+  border-radius: 0;
+}
+
+a.lln-bar__button:hover {
+  background: var(--accent, #edf6ff);
+  color: var(--link, #0b68cb);
   text-decoration: none;
 }
 
-.learn-llm-navigation .learn-llm-navigation__button:focus-visible {
-  outline: 2px solid var(--ring, #94a3b8);
+.lln-bar__button[aria-disabled="true"] {
+  color: var(--muted-foreground, #64748b);
+  opacity: 0.45;
+}
+
+.lln-card:focus-visible,
+.lln-end__home:focus-visible,
+.lln-bar__button:focus-visible {
+  outline: 2px solid var(--ring, #2870bd);
   outline-offset: 2px;
 }
 
-.learn-llm-navigation .learn-llm-navigation__button:disabled {
-  opacity: 0.3;
-  background: transparent;
-  cursor: default;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .learn-llm-navigation {
-    background: var(--background, #fff);
+@media (max-width: 560px) {
+  .lln-end__cards {
+    grid-template-columns: 1fr;
   }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .learn-llm-navigation {
-    background: var(--background, #fff);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+  .lln-card--empty {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .learn-llm-navigation .learn-llm-navigation__button {
+  .lln-card,
+  .lln-bar__button {
     transition: none;
   }
 }

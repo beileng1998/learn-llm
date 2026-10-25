@@ -5,7 +5,7 @@ import shutil
 import pytest
 
 from learn_llm.course import LESSONS, load
-from learn_llm.navigation import install_navigation, navigation, navigation_links
+from learn_llm.navigation import install_navigation, navigation, neighbours
 
 
 @pytest.fixture
@@ -20,23 +20,19 @@ def workspace(tmp_path):
 
 
 def test_navigation_uses_actual_order_and_has_no_wraparound(workspace):
-    first = navigation_links("00", "zh-CN", workspace)
-    middle = navigation_links("02", "zh-CN", workspace)
-    last = navigation_links("05", "zh-CN", workspace)
-    assert [url for url, _ in first] == [None, "?file=home.py", "?file=zh-CN%2F02-lesson.py"]
-    assert [url for url, _ in middle] == [
-        "?file=zh-CN%2F00-lesson.py", "?file=home.py", "?file=zh-CN%2F05-lesson.py",
-    ]
-    assert [url for url, _ in last] == ["?file=zh-CN%2F02-lesson.py", "?file=home.py", None]
-    assert first[2][1] == "下一章：zh-CN 02"
-    assert navigation_links("99", "en", workspace) == [
-        (None, "Previous chapter"), ("?file=home.py", "Course index"), (None, "Next chapter"),
-    ]
+    first = neighbours("00", "zh-CN", workspace)
+    middle = neighbours("02", "zh-CN", workspace)
+    last = neighbours("05", "zh-CN", workspace)
+    assert first[0] is None and first[1].url == "?file=zh-CN%2F02-lesson.py"
+    assert [n.url for n in middle] == ["?file=zh-CN%2F00-lesson.py", "?file=zh-CN%2F05-lesson.py"]
+    assert last[0].url == "?file=zh-CN%2F02-lesson.py" and last[1] is None
+    assert first[1].title == "zh-CN 02"
+    assert neighbours("99", "en", workspace) == (None, None)
 
 
 def test_navigation_returns_to_selected_language_after_english_fallback(workspace):
     (workspace / "zh-CN/02-lesson.py").unlink()
-    assert navigation_links("00", "zh-CN", workspace)[-1][0] == "?file=en%2F02-lesson.py"
+    assert neighbours("00", "zh-CN", workspace)[1].url == "?file=en%2F02-lesson.py"
     (workspace / ".settings.json").write_text(json.dumps({"locale": "zh-CN"}))
     html = navigation("02", "en", workspace).text
     assert "上一章" in html and "下一章" in html
@@ -56,27 +52,34 @@ def test_titles_are_literal_html(workspace):
     assert "<img" not in html
 
 
-def test_navigation_has_three_accessible_controls_without_a_sidebar(workspace):
+def test_navigation_works_offline_and_names_the_neighbours(workspace):
+    html = navigation("02", "en", workspace).text
+    assert "iconify" not in html and "http" not in html  # nothing loaded from the internet
+    assert html.count('class="lln-card lln-card--') == 2  # previous and next cards, by name
+    assert ">en 00<" in html and ">en 05<" in html
+    assert "position: fixed" in html  # the corner bar
+    assert 'aria-label="Next: en 05"' in html
+
+
+def test_first_and_last_chapters(workspace):
     from html.parser import HTMLParser
 
-    class Controls(HTMLParser):
+    class Bar(HTMLParser):
         def __init__(self):
             super().__init__()
-            self.controls = []
+            self.buttons = []
 
         def handle_starttag(self, tag, attrs):
             attrs = dict(attrs)
-            if tag in ("a", "button") and attrs.get("class") == "learn-llm-navigation__button":
-                self.controls.append((tag, attrs))
+            if "lln-bar__button" in (attrs.get("class") or ""):
+                self.buttons.append((tag, attrs))
 
-    parser = Controls()
-    html = navigation("00", "zh-CN", workspace).text
-    parser.feed(html)
-    assert [tag for tag, attrs in parser.controls] == ["button", "a", "a"]
-    assert "disabled" in parser.controls[0][1]
-    assert all(attrs.get("aria-label") and attrs.get("title") for _, attrs in parser.controls)
-    assert "marimo-sidebar" not in html
-    assert "position: fixed" in html
+    bar = Bar()
+    bar.feed(navigation("00", "en", workspace).text)
+    assert [tag for tag, _ in bar.buttons] == ["span", "a", "a"]  # nothing before the first chapter
+    assert bar.buttons[0][1].get("aria-disabled") == "true"
+    assert all(attrs.get("aria-label") or tag == "a" for tag, attrs in bar.buttons)
+    assert "More chapters are on the way" in navigation("05", "en", workspace).text
 
 
 @pytest.mark.parametrize("newline", [b"\n", b"\r\n"])
@@ -103,6 +106,7 @@ def test_install_preserves_work_bytes_and_backs_up_once(tmp_path, newline):
     assert path.read_bytes() == installed
     assert backup.read_bytes() == original
     assert load(path).to_fahrenheit(100) == 212
+    assert nav is [n for n in tree.body if isinstance(n, ast.FunctionDef)][-1]  # the last cell
 
 
 def test_editor_save_then_restart_does_not_duplicate_navigation(tmp_path):
@@ -146,3 +150,20 @@ def test_prepare_workspace_migrates_existing_work_and_adds_new_lessons(tmp_path,
     launch.prepare_workspace()
     assert existing.read_bytes() == first
     assert (work / ".navigation-backups/en" / existing.name).read_text() == answer
+
+
+def test_install_appends_when_there_is_no_main_guard(tmp_path):
+    path = tmp_path / "en/00-first-program.py"
+    path.parent.mkdir()
+    text = (LESSONS / "en" / path.name).read_text()
+    path.write_text(text[: text.index('if __name__ == "__main__":')].rstrip("\n"))
+    assert install_navigation(path, tmp_path)
+    tree = ast.parse(path.read_text())
+    assert "_course_navigation" in ast.unparse(tree.body[-1])
+    assert not install_navigation(path, tmp_path)
+
+
+def test_a_translated_page_keeps_its_own_language(workspace):
+    (workspace / ".settings.json").write_text(json.dumps({"locale": "zh-CN"}))
+    html = navigation("02", "en", workspace).text  # zh-CN/02 exists, so this English page was chosen
+    assert "Next" in html and "下一章" not in html

@@ -1,4 +1,10 @@
-"""Shared chapter navigation, installed once in each learner notebook at startup."""
+"""Shared chapter navigation, installed once in each learner notebook at startup.
+
+The cell sits at the end of the notebook. It shows two things: a card after the
+chapter's last section with the previous and next chapters by name, and a small
+bar fixed in the corner for moving between chapters from anywhere on the page.
+Everything is plain HTML and CSS, so it works offline.
+"""
 
 import ast
 import json
@@ -6,64 +12,98 @@ import os
 import re
 import shutil
 import tempfile
+from dataclasses import dataclass
 from html import escape
 from pathlib import Path
 from urllib.parse import urlencode
 
 from learn_llm.course import WORK, chapters
-from learn_llm.i18n import LOCALES, t
+from learn_llm.i18n import LOCALES, SOURCE_LOCALE, t
 
 
-def navigation_links(number: str, locale: str, base: Path = WORK) -> list[tuple[str | None, str]]:
-    """Return three stable slots; unavailable chapter links have no destination."""
+@dataclass(frozen=True)
+class Neighbour:
+    number: str
+    title: str
+    url: str
+
+
+def neighbours(number: str, locale: str, base: Path = WORK) -> tuple[Neighbour | None, Neighbour | None]:
+    """The chapters before and after `number`, in `locale` (English where untranslated)."""
     available = chapters(locale, base)
     index = next((i for i, ch in enumerate(available) if ch.number == number), None)
-    links = [
-        (None, t("nav.previous", locale)),
-        ("?file=home.py", t("nav.home", locale)),
-        (None, t("nav.next", locale)),
-    ]
+    if index is None:
+        return None, None
 
-    def chapter_link(ch, key):
-        url = "?" + urlencode({"file": ch.path.relative_to(base).as_posix()})
-        return url, t("nav.destination", locale, action=t(key, locale), title=ch.title)
+    def neighbour(i):
+        if not 0 <= i < len(available):
+            return None
+        ch = available[i]
+        return Neighbour(ch.number, ch.title, "?" + urlencode({"file": ch.path.relative_to(base).as_posix()}))
 
-    if index is not None and index > 0:
-        links[0] = chapter_link(available[index - 1], "nav.previous")
-    if index is not None and index + 1 < len(available):
-        links[2] = chapter_link(available[index + 1], "nav.next")
-    return links
+    return neighbour(index - 1), neighbour(index + 1)
+
+
+def _locale(number: str, page_locale: str, base: Path) -> str:
+    """The page's own language, unless the page is English standing in for an untranslated
+    chapter: then the learner's chosen language, so the next chapter is in it again."""
+    try:
+        chosen = json.loads((base / ".settings.json").read_text(encoding="utf-8")).get("locale")
+    except (OSError, ValueError, AttributeError):
+        chosen = None
+    if page_locale == SOURCE_LOCALE and chosen in LOCALES and chosen != SOURCE_LOCALE:
+        if not any((base / chosen).glob(f"{number}-*.py")):
+            return chosen
+    return page_locale
+
+
+def _card(item: Neighbour | None, side: str, locale: str) -> str:
+    key = "nav.previous" if side == "previous" else "nav.next"
+    if item is None:
+        if side == "previous":
+            return '<div class="lln-card lln-card--empty"></div>'
+        return f'<div class="lln-card lln-card--later"><span class="lln-card__title">{escape(t("nav.later", locale))}</span></div>'
+    arrow = "←" if side == "previous" else "→"
+    caption = f"{arrow} {t(key, locale)}" if side == "previous" else f"{t(key, locale)} {arrow}"
+    return (
+        f'<a class="lln-card lln-card--{side}" href="{escape(item.url, quote=True)}">'
+        f'<span class="lln-card__caption">{escape(caption)}</span>'
+        f'<span class="lln-card__title">{escape(item.title)}</span></a>'
+    )
+
+
+def _bar_button(item: Neighbour | None, side: str, locale: str) -> str:
+    key = "nav.previous" if side == "previous" else "nav.next"
+    arrow = "←" if side == "previous" else "→"
+    if item is None:
+        label = t(key, locale)
+        return f'<span class="lln-bar__button" aria-disabled="true" aria-label="{escape(label, quote=True)}">{arrow}</span>'
+    label = t("nav.destination", locale, action=t(key, locale), title=item.title)
+    text = f"{arrow} {item.number}" if side == "previous" else f"{item.number} {arrow}"
+    attrs = f'aria-label="{escape(label, quote=True)}" title="{escape(label, quote=True)}"'
+    return f'<a class="lln-bar__button" href="{escape(item.url, quote=True)}" {attrs}>{escape(text)}</a>'
 
 
 def navigation(number: str, default_locale: str, base: Path = WORK):
-    """Render independently of exercise cells, retaining the learner's language."""
+    """Render the end-of-chapter card and the corner bar."""
     import marimo as mo
 
-    try:
-        locale = json.loads((base / ".settings.json").read_text(encoding="utf-8")).get("locale")
-    except (OSError, ValueError, AttributeError):
-        locale = None
-    if locale not in LOCALES:
-        locale = default_locale
-    # Plain escaped anchors keep chapter titles literal, and use the editor's
-    # normal same-origin navigation and unsaved-change handling.
-    controls = []
-    icons = ("ph:arrow-left-light", "ph:squares-four-light", "ph:arrow-right-light")
-    for (url, label), icon in zip(navigation_links(number, locale, base), icons):
-        attributes = (
-            'class="learn-llm-navigation__button" '
-            f'aria-label="{escape(label, quote=True)}" title="{escape(label, quote=True)}"'
-        )
-        content = mo.icon(icon, size=16).text
-        if url is None:
-            controls.append(f'<button type="button" {attributes} disabled>{content}</button>')
-        else:
-            controls.append(f'<a href="{escape(url, quote=True)}" {attributes}>{content}</a>')
+    locale = _locale(number, default_locale, base)
+    previous, following = neighbours(number, locale, base)
+    home = escape(t("nav.home", locale))
     css = Path(__file__).with_name("navigation.css").read_text(encoding="utf-8")
+    label = escape(t("nav.label", locale), quote=True)
     return mo.Html(
-        f'<style>{css}</style>'
-        f'<nav class="learn-llm-navigation" aria-label="{escape(t("nav.label", locale))}">'
-        + "".join(controls) + "</nav>"
+        f"<style>{css}</style>"
+        f'<nav class="lln-end" aria-label="{label}">'
+        f'<div class="lln-end__cards">{_card(previous, "previous", locale)}{_card(following, "next", locale)}</div>'
+        f'<a class="lln-end__home" href="?file=home.py">{home}</a>'
+        "</nav>"
+        f'<nav class="lln-bar" aria-label="{label}">'
+        f"{_bar_button(previous, 'previous', locale)}"
+        f'<a class="lln-bar__button lln-bar__home" href="?file=home.py">{home}</a>'
+        f"{_bar_button(following, 'next', locale)}"
+        "</nav>"
     )
 
 
@@ -92,8 +132,13 @@ def _has_navigation(cell: ast.FunctionDef) -> bool:
     )
 
 
+def _is_main_guard(node) -> bool:
+    return (isinstance(node, ast.If) and isinstance(node.test, ast.Compare)
+            and isinstance(node.test.left, ast.Name) and node.test.left.id == "__name__")
+
+
 def install_navigation(path: Path, base: Path = WORK) -> bool:
-    """Add one standard cell without reserializing or replacing any learner text.
+    """Add one standard cell at the end of the notebook, without changing any learner text.
 
     Back up the original once, then replace atomically. Invalid notebooks are
     left alone; the launcher reports them so the learner can fix them in marimo.
@@ -119,9 +164,16 @@ def install_navigation(path: Path, base: Path = WORK) -> bool:
         f'    _course_navigation({path.name[:2]!r}, {relative.parts[0]!r})\n'
         '    return\n\n\n'
     ).replace("\n", newline)
-    first_line = min(d.lineno for d in cells[0].decorator_list) - 1
     lines = text.splitlines(keepends=True)
-    updated = ("".join(lines[:first_line]) + cell + "".join(lines[first_line:])).encode("utf-8")
+    guard = next((node for node in tree.body if _is_main_guard(node)), None)
+    if guard is not None:
+        at = guard.lineno - 1  # just before `if __name__ == "__main__":`
+    else:
+        at = len(lines)
+        if lines and not lines[-1].endswith("\n"):
+            lines[-1] += newline
+        cell = newline * 2 + cell.rstrip("\r\n") + newline
+    updated = ("".join(lines[:at]) + cell + "".join(lines[at:])).encode("utf-8")
     ast.parse(updated)
 
     backup = base / ".navigation-backups" / relative
