@@ -29,9 +29,8 @@ def _call(f, *args):
     return _plain(f(*[_a(a) for a in args]))
 
 
-def _rows_sum_to_one(f):
-    P = np.asarray(f(_a([[2, 1, 0.1], [0, 0, 0], [-3, 5, 1]])), dtype=float)
-    return P.shape == (3, 3) and bool(np.allclose(P.sum(axis=1), 1))
+# Two rows of three: a missing keepdims can't hide behind a square matrix.
+ROWS = [[1, 2, 3], [10, 20, 30]]
 
 
 EXERCISES = {
@@ -42,7 +41,7 @@ EXERCISES = {
     ],
     "softmax": [
         Case("ch06.softmax.three", lambda f: _call(f, [[2, 1, 0.1]]), _softmax(_a([[2, 1, 0.1]])).tolist(), tolerance=1e-6, hint="ch06.softmax.hint"),
-        Case("ch06.softmax.rows", _rows_sum_to_one, True, hint="ch06.softmax.rows_hint"),
+        Case("ch06.softmax.rows", lambda f: _call(f, ROWS), _softmax(_a(ROWS)).tolist(), tolerance=1e-6, hint="ch06.softmax.rows_hint"),
         Case("ch06.softmax.huge", lambda f: _call(f, [[1000, 1000]]), [[0.5, 0.5]], tolerance=1e-9, hint="ch06.softmax.huge_hint"),
     ],
     "cross_entropy": [

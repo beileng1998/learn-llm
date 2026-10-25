@@ -129,7 +129,7 @@
   "ch06.accuracy.none": "with labels [0, 0, 1] no guess is right: 0.0",
   "ch06.accuracy.hint": "Tip: `guesses = np.argmax(S, axis=1)` (one guess per row), then `return np.mean(guesses == labels)`.",
   "ch06.softmax.three": "softmax([[2, 1, 0.1]]) is about [[0.659, 0.242, 0.099]]",
-  "ch06.softmax.rows": "for three pictures at once, each row's shares add up to 1",
+  "ch06.softmax.rows": "for two pictures [[1, 2, 3], [10, 20, 30]], each row gets its own shares",
   "ch06.softmax.huge": "scores [[1000, 1000]] give [[0.5, 0.5]], not nan",
   "ch06.softmax.hint": "Tip: subtract each row's largest score, `np.exp`, then divide by each row's total; use `axis=1, keepdims=True` for both the max and the sum.",
   "ch06.softmax.rows_hint": "Tip: work row by row: `np.max(S, axis=1, keepdims=True)` and `np.sum(E, axis=1, keepdims=True)`. Without `axis=1` you'd use the whole matrix's max or total.",

@@ -129,7 +129,7 @@
   "ch06.accuracy.none": "标签是 [0, 0, 1] 时，一个也没猜对：0.0",
   "ch06.accuracy.hint": "提示：`guesses = np.argmax(S, axis=1)`（每行一个猜测），然后 `return np.mean(guesses == labels)`。",
   "ch06.softmax.three": "softmax([[2, 1, 0.1]]) 约为 [[0.659, 0.242, 0.099]]",
-  "ch06.softmax.rows": "一次处理三张图时，每一行的份额加起来都是 1",
+  "ch06.softmax.rows": "两张图 [[1, 2, 3], [10, 20, 30]]，每一行得到自己的份额",
   "ch06.softmax.huge": "分数 [[1000, 1000]] 得到 [[0.5, 0.5]]，而不是 nan",
   "ch06.softmax.hint": "提示：先减去每行最大的分数，再 `np.exp`，然后除以每行的总和；求最大值和求和都要用 `axis=1, keepdims=True`。",
   "ch06.softmax.rows_hint": "提示：要一行一行地算：`np.max(S, axis=1, keepdims=True)` 和 `np.sum(E, axis=1, keepdims=True)`。不写 `axis=1`，用的就是整个矩阵的最大值或总和。",
