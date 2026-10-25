@@ -38,9 +38,9 @@ that covers the essential knowledge of CS231n → CS224N → CS336 → tiny-llm.
 | 03 | Blame flows backwards | Backprop by hand and in plain code; exact gradients | Computation graphs, chain rule, blames add, gradient check | 231n backprop |
 | 04 | Keeping the books | A small automatic backprop engine (scalar autograd) | Classes, objects, recording a calculation, reverse order | 231n backprop |
 | 05 | Many numbers at once | A model with several inputs; its loss and gradient in NumPy | Vectors, dot product, matrices, shapes, `@`, broadcasting, NumPy | 231n numpy |
-| 06 | Recognizing digits | Softmax classifier on MNIST | Probability, exp/log, cross-entropy | 231n softmax/SVM |
-| 07 | Neural networks | MLP with matrix backprop | Nonlinearity, gradient of matmul | 231n NN, A1/A2 |
-| 08 | Training that works | Optimizers, init, norms, regularization | Variance, moving averages | 231n training, A2 |
+| 06 | Recognizing digits | Softmax classifier on a bundled MNIST subset (about 90%) | Indexing, matrix @ matrix, e^x and log with their slopes, softmax, cross-entropy, transpose | 231n softmax/SVM |
+| 07 | Neural networks | One-hidden-layer network with matrix backprop (about 94%) | ReLU, hidden layers, blame through matrices, random start | 231n NN, A1/A2 |
+| 08 | Training that works | Mini-batches, He start, momentum, Adam, weight decay | Variance, slicing, moving averages, overfitting | 231n training, A2 |
 | 09 | Hello PyTorch | Port your engine, compare to torch | Tensors, modules, GPU concept | 231n PyTorch |
 | 10 | Seeing with convolutions | Small CNN / ResNet on CIFAR | Convolution, residuals | 231n CNNs (condensed) |
 | **Part 2 — Language** (CS224N core) |

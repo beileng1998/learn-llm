@@ -5,8 +5,9 @@
 Go from almost no maths or programming to building your own large language model, then
 serving it the way production systems do. Everything happens on one page in your browser.
 
-> **Status: early.** Chapters 00–04 are ready: from your first line of Python to a working
-> backprop engine. Chapter 05 (many numbers at once) is next.
+> **Status: early.** Chapters 00–08 are ready: from your first line of Python to a neural
+> network that reads handwritten digits, trained with the methods real models use. Chapter 09
+> (Hello PyTorch) is next.
 > See the [full chapter map](SCOPE.md).
 
 ## Start
@@ -60,4 +61,5 @@ questions are welcome as GitHub issues.
 
 ## License
 
-Code: [MIT](LICENSE). Lesson text: [CC BY 4.0](LICENSE-CONTENT).
+Code: [MIT](LICENSE). Lesson text: [CC BY 4.0](LICENSE-CONTENT). The bundled MNIST digits
+(from chapter 06): [CC BY-SA 3.0](learn_llm/data/MNIST-NOTICE.md), by Yann LeCun and Corinna Cortes.

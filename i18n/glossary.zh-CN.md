@@ -59,3 +59,34 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | array | 数组 | 05 |
 | elementwise / position by position | 逐个位置 | 05 |
 | broadcasting | 广播 | 05 |
+| classification | 分类 | 06 |
+| label | 标签 | 06 |
+| pixel | 像素 | 06 |
+| score | 分数 | 06 |
+| accuracy | 准确率 | 06 |
+| probability / share | 概率 / 份额 | 06 |
+| surprise (−log p) | 意外程度 | 06 |
+| cross-entropy | 交叉熵 | 06 |
+| one-hot | one-hot（独热） | 06 |
+| transpose | 转置 | 06 |
+| template | 模板 | 06 |
+| test set | 测试集（测试图片） | 06 |
+| neural network | 神经网络 | 07 |
+| bend (ReLU) | 弯折 | 07 |
+| hidden layer | 隐藏层 | 07 |
+| detector (hidden unit) | 探测器 | 07 |
+| seed (random) | 种子 | 07 |
+| mask | 掩码 | 07 |
+| classifier | 分类器 | 06 |
+| variance | 方差 | 08 |
+| typical size | 典型大小 | 07 |
+| He initialisation | He 初始化 | 08 |
+| batch / mini-batch | 批 / 小批量 | 08 |
+| epoch | 轮次 | 08 |
+| slice | 切片 | 08 |
+| momentum | 动量 | 08 |
+| velocity | 速度 | 08 |
+| overfitting | 过拟合 | 08 |
+| weight | 权重 | 08 |
+| bias | 偏置 | 08 |
+| weight decay | 权重衰减 | 08 |

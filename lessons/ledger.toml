@@ -66,6 +66,48 @@ uses = [
     "error-message",
 ]
 
+[chapters.06]
+introduces = [
+    "classification", "label", "pixel", "indexing", "reshape", "numpy-zeros",
+    "matrix-times-matrix", "argmax", "axis", "comparing-arrays", "accuracy", "test-set",
+    "exp", "softmax", "softmax-shift", "keepdims", "log", "surprise", "cross-entropy",
+    "one-hot", "exp-slope", "log-slope", "softmax-gradient", "transpose", "numpy-sum",
+]
+uses = [
+    "matmul-operator", "shape", "shape-rule", "broadcasting", "elementwise", "numpy-array",
+    "numpy-mean", "vector-times-matrix", "vectorized-gradient", "gradient-descent",
+    "learning-rate", "nudge", "chain-rule", "blame", "blames-add", "local-slope",
+    "derivative-rules", "power", "builtin-range", "builtin-len", "loop", "gradient-check",
+    "centering-inputs", "chart-reading", "tuple",
+]
+
+[chapters.07]
+introduces = [
+    "model-capacity", "relu", "piecewise-line", "hidden-layer", "neural-network",
+    "matmul-grouping", "random-generator", "random-init", "input-gradient", "relu-slope",
+    "boolean-mask", "two-layer-backprop",
+]
+uses = [
+    "softmax", "cross-entropy", "accuracy", "one-hot", "matrix-times-matrix", "transpose",
+    "softmax-gradient", "numpy-sum", "axis", "keepdims", "chain-rule", "blames-add",
+    "local-slope", "gradient-check", "nudge", "gradient-descent", "learning-rate", "indexing",
+    "reshape", "numpy-zeros", "builtin-range", "curve-model", "comparing-arrays", "test-set",
+]
+
+[chapters.08]
+introduces = [
+    "variance", "typical-size", "numpy-sqrt", "zero-init-symmetry", "variances-add",
+    "he-init", "vanishing-exploding", "mini-batch", "epoch", "permutation", "range-step",
+    "slicing", "index-array", "argument-unpacking", "momentum", "moving-average", "adam",
+    "bias-correction", "overfitting", "weight-decay", "numpy-eye", "numpy-abs",
+]
+uses = [
+    "neural-network", "softmax", "two-layer-backprop", "accuracy", "one-hot", "random-generator",
+    "random-init", "relu", "mean", "squaring", "gradient-descent", "learning-rate",
+    "step-rule", "test-set", "indexing", "list-append", "builtin-range", "builtin-len",
+    "derivative-rules", "centering-inputs", "elementwise", "function", "return-pair",
+]
+
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
 error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
@@ -144,3 +186,62 @@ numpy-mean = "np.mean(array) is the mean of all its numbers"
 vector-times-matrix = "v @ X: dot product of v with every column of X; (8,) @ (8, 3) gives (3,)"
 vectorized-gradient = "grad_w = (2 * e) @ X / n, grad_b = np.mean(2 * e): each knob's slope is the mean of 2e times its own input"
 broadcasting = "a smaller array used against every row: X - np.array([25, 0, 0]) subtracts 25 from each row's first column"
+classification = "choosing one answer from a fixed list, like which digit 0–9 a picture shows"
+label = "the correct answer for an example, e.g. the digit a picture really shows"
+pixel = "one dot of a picture: 0 is white, 255 is black ink"
+indexing = "a[0] picks the first item (counting from 0); M[i, j] picks row i, column j; M[i, j] = 1 stores there"
+reshape = "A.reshape(10000, 784): the same numbers in the same order, in a new shape"
+numpy-zeros = "np.zeros((784, 10)) makes an array of that shape filled with 0"
+matrix-times-matrix = "A @ B: every row of A dotted with every column of B; (n, 784) @ (784, 10) gives (n, 10)"
+argmax = "np.argmax(v) is the position of the largest number; with axis=1, one per row"
+axis = "axis=1 works across each row (one result per row); axis=0 down each column"
+comparing-arrays = "a == b compares position by position, giving True/False; np.mean counts True as 1"
+accuracy = "the share of examples the model gets right"
+test-set = "examples kept aside and never trained on, to measure honestly"
+exp = "e^s (np.exp): e ≈ 2.718 to the power s; always positive, keeps order, e^(a+b) = e^a × e^b"
+softmax = "e^s divided by the row's total: scores become shares (probabilities) that add up to 1"
+softmax-shift = "subtracting a row's largest score before e^ leaves the shares unchanged and avoids overflow"
+keepdims = "keepdims=True keeps a column shape (n, 1), which broadcasts across each row"
+log = "log undoes e^: log(e^a) = a; log 1 = 0; log(x / y) = log x − log y"
+surprise = "−log p of the right answer's share: 0 when sure and right, large when sure and wrong"
+cross-entropy = "the mean surprise over all examples: the loss for classification"
+one-hot = "a row with a 1 at the right answer's position and 0 elsewhere"
+exp-slope = "the slope of e^x is e^x itself (that is why e is chosen)"
+log-slope = "the slope of log x is 1 / x"
+softmax-gradient = "the slope of the surprise for each score is p − 1 for the right answer and p for the others: p − y"
+transpose = "X.T swaps rows and columns; X.T @ G gives the slope of every knob in W"
+numpy-sum = "np.sum(A, axis=0) adds down each column; axis=1 across each row"
+model-capacity = "a single weighted sum per answer can't express 'this or that'; training longer doesn't fix it"
+relu = "relu(z) = z when z > 0, else 0: np.maximum(Z, 0)"
+piecewise-line = "a line plus ReLU pieces bends where you choose; enough bends follow any shape"
+hidden-layer = "H = relu(X @ W1 + b1): detectors in between input and scores"
+neural-network = "layers of weighted sums with bends: X → H → scores"
+matmul-grouping = "(X @ W1) @ W2 = X @ (W1 @ W2): two layers without a bend equal one"
+random-generator = "rng = np.random.default_rng(0); rng.normal(0, 0.05, shape): seeded random numbers around 0"
+random-init = "networks start from small random knobs, not zeros"
+input-gradient = "dH = G @ W2.T: a value feeding many scores collects their blames"
+relu-slope = "ReLU passes blame where z > 0 (slope 1) and blocks it elsewhere (slope 0)"
+boolean-mask = "multiplying by Z > 0 counts True as 1 and False as 0"
+two-layer-backprop = "G, dW2 = H.T @ G, dH = G @ W2.T, dZ = dH * (Z > 0), dW1 = X.T @ dZ"
+variance = "mean of (number − mean)²: how spread out numbers are"
+typical-size = "the square root of the variance (or of the mean square, for numbers centred on 0)"
+numpy-sqrt = "np.sqrt(9) is 3: the number that times itself gives 9"
+zero-init-symmetry = "all-zero knobs make every detector identical forever, and block all blame to W1"
+variances-add = "the variance of a sum of independent random parts is the sum of their variances"
+he-init = "start knobs with typical size √(2 / n) for n inputs, so values keep their size through ReLU layers"
+vanishing-exploding = "too small a start fades values to 0 through layers; too big explodes them"
+mini-batch = "a slope from a random batch of examples: a cheap, rough estimate of the full slope"
+epoch = "one pass through all the batches"
+permutation = "rng.permutation(n) gives 0 … n−1 in random order"
+range-step = "range(0, n, size) counts from 0 in jumps of size; range(1, 501) counts 1 … 500"
+slicing = "a[start:stop] gives positions start … stop−1"
+index-array = "X[[3, 0, 7]] picks rows 3, 0 and 7"
+argument-unpacking = "f(X, *knobs) passes the items of knobs as separate inputs"
+momentum = "velocity = 0.9 × velocity + slope; knob −= rate × velocity"
+moving-average = "an average that keeps adding new values while fading old ones"
+adam = "divide each knob's averaged slope by the root of its averaged squared slope: one pace for every knob"
+bias-correction = "dividing by 1 − 0.9^t (and 1 − 0.999^t) undoes the zero start of the averages"
+overfitting = "perfect on training data, worse on new data: the model memorised"
+weight-decay = "add decay × knob to every slope (a penalty on big knobs) so knobs shrink unless the data needs them"
+numpy-eye = "np.eye(10) is the 10 × 10 table with 1s on the diagonal; np.eye(10)[labels] gives one-hot rows"
+numpy-abs = "np.abs makes every number positive"

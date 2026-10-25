@@ -116,6 +116,35 @@ To show what "no gaps" means in practice, here is the step sequence.
 - **06 Neural networks.** Why a straight line can't bend; ReLU. Matrix backprop derived one
   entry at a time (option 6). The learner's ch 03 engine and the matrix version must agree.
 
+## Step plan: chapters 06–08 (written 2026-10-25)
+
+Data: a bundled 12,000-image MNIST subset (`learn_llm/data`), so every chapter works offline.
+
+- **06 Recognizing digits.** An image is a 28 × 28 grid of numbers (indexing `a[0]` taught
+  here), flattened to 784. One weight column per digit: `X @ W` is many dot products at once
+  (matrix @ matrix, the shape rule extended). Guess = the biggest score (`np.argmax`), accuracy
+  = share of correct guesses; an untrained model gets about 10%. Right/wrong has no slope, so:
+  make scores positive with `e^s` (e built from nudges: the base whose growth rate equals
+  itself), then shares that add to 1 (softmax; subtracting each row's largest score changes
+  nothing and avoids overflow; `axis` and `keepdims` taught). Loss = surprise `−log p` of the
+  right digit (log as "undo e^"). Slopes of `e^x` and `log x` derived by nudging; the slope
+  of the loss for each score is `p − 1` for the right digit and `p` for the others, derived on
+  a 3-class example and nudge-checked. Vectorized: `G = (P − Y) / n`, `X.T @ G` (transpose
+  taught), then gradient descent: about 90% after 100 steps. The 10 weight columns shown as
+  images.
+- **07 Neural networks.** One weighted sum per digit can't express "either this or that". A
+  bend: ReLU, `max(0, z)`; sums of ReLUs make bendy curves (|x| = relu(x) + relu(−x), then
+  ch 04's heatwave hill). Hidden layer `H = relu(X @ W1 + b1)`, scores `H @ W2 + b2`. Backward
+  through matrices, one entry at a time first: `dW2 = H.T @ G` (ch 06 with H as input),
+  `dH = G @ W2.T` (each hidden value feeds all ten scores: blames add), ReLU passes blame
+  where z > 0, `dW1 = X.T @ dZ`. Checked against nudging. 64 hidden units: about 94%.
+- **08 Training that works.** Mini-batches and epochs (shuffling with a seeded random
+  generator): the same accuracy about 60 times faster. Train vs test: overfitting, and weight
+  decay as the fix. Initialization: all-zero weights never learn (symmetry); the spread
+  (variance, taught here) of values through a deep stack shrinks or explodes unless the
+  scale is about √(2 / inputs). Moving averages → momentum (ch 02's crawling `b`, fixed);
+  dividing by the size of recent slopes → Adam.
+
 ## Decisions
 
 - Route: **R3** (user). R1 rejected: restarts between parts. R2 rejected: vision shrinks to a
@@ -127,3 +156,6 @@ To show what "no gaps" means in practice, here is the step sequence.
 - Chapter 04 is a new chapter, "Keeping the books", for the automatic engine (user, 2026-10-25).
   Folding it into "Many numbers at once" would have taught two hard new ideas (classes and
   matrices) in one chapter.
+- Chapters 06–08 use a bundled MNIST subset (user, 2026-10-25). Normalization layers move to
+  the Transformer chapter, where layer norm is first needed; dropout is mentioned only, since
+  weight decay already shows regularization (agent-default).

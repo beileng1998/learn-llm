@@ -6,7 +6,6 @@ Run by start.sh / start.cmd. `--smoke` starts the server, checks it answers, and
 import argparse
 import json
 import locale
-import secrets
 import signal
 import shutil
 import socket
@@ -84,17 +83,13 @@ def main(argv=None) -> int:
     signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
     prepare_workspace()
     port = free_port(args.port)
-    token = secrets.token_urlsafe(16)
+    # No password (the maintainer's choice): the server listens on this computer only.
     server = subprocess.Popen(
-        [sys.executable, "-m", "marimo", "edit", str(WORK), "--headless", "--port", str(port),
-         "--token-password-file", "-", "--skip-update-check", "--no-sandbox"],
-        stdin=subprocess.PIPE,
-        text=True,
+        [sys.executable, "-m", "marimo", "edit", str(WORK), "--headless", "--host", "127.0.0.1",
+         "--port", str(port), "--no-token", "--skip-update-check", "--no-sandbox"],
     )
-    server.stdin.write(token)
-    server.stdin.close()
 
-    url = f"http://localhost:{port}/?file=home.py&access_token={token}"
+    url = f"http://localhost:{port}/?file=home.py"
     try:
         wait_until_up(url, server)
         if args.smoke:
