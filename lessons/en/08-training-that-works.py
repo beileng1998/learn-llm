@@ -79,7 +79,8 @@ def _():
     mo.md(r"""
     (`np.eye(10)[train_labels]` is a shortcut for chapter 06's `one_hot`: `np.eye(10)` is the
     10 × 10 table with 1s on its diagonal, so row `k` of it is the one-hot row for digit `k`, and
-    giving a list of labels picks one such row per picture.)
+    giving a list of labels picks one such row per picture; picking several rows with a list is
+    explained under Small batches.)
 
     ## How spread out? Variance
 
@@ -267,7 +268,7 @@ def _():
 
     Write `batches(n, size, rng)`, returning a list of batches (each an array of positions):
 
-    1. `order = rng.permutation(n)` and `result = []`
+    1. Two lines: `order = rng.permutation(n)`, then `result = []`
     2. `for start in range(0, n, size):` and inside it
        `result.append(order[start:start + size])`
     3. After the loop, `return result`
@@ -332,7 +333,7 @@ def _(X, X_test, Y, test_labels):
 def _():
     mo.md(r"""
     Five epochs reach about **94%**, as chapter 07's 300 full steps did. The second number is
-    the seconds it took: well under one, against about 10 for chapter 07. 500 small steps cost as much as 5 full ones. Each small step is noisier,
+    the seconds it took: well under one, against about 10 for chapter 07. 500 small steps look at as many pictures as 5 full ones. Each small step is noisier,
     but there are 100 times more of them. This is how every large model is trained: nobody
     computes a slope over a whole dataset of billions of examples.
 
@@ -341,7 +342,7 @@ def _():
     Back to chapter 02's problem. On Mia's raw temperatures the slope for `w` is huge (each error is
     multiplied by the temperature, which is in the tens) and the slope for `b` is small, so a learning rate small enough for `w` makes
     `b` crawl. Let's pack both knobs into one vector `k = [w, b]` and watch plain steps from
-    chapter 02's start, `[6, 0]`, at the largest learning rate that doesn't blow up (0.0016):
+    chapter 02's start, `[6, 0]`, at about the largest learning rate that doesn't blow up (0.0016):
     """)
     return
 
@@ -437,17 +438,17 @@ def _():
 
     For a knob with huge slopes (`w`), the division makes the step smaller; for a knob with small
     slopes (`b`), bigger. Every knob ends up moving at a similar pace: on the very first step,
-    each moves by exactly `rate`. After that the averages settle and the steps shrink as the
-    knobs near the best line; below, with rate 1.0, `b` is at about −42 after 100 steps, −99
-    after 300 and −107 after 500. That is exactly what we did by hand when we rescaled temperatures in chapters 04 and
+    each moves by exactly `rate` (then the average slope is just the slope, and √(slope²) is its
+    size, so their ratio is +1 or −1). After that the averages settle and the steps shrink as
+    the knobs near the best line. The cell below shows only the end, after 500 steps at rate
+    1.0; on the way there, `b` passes about −42 at step 100 and −99 at step 300. That is exactly what we did by hand when we rescaled temperatures in chapters 04 and
     05, now done automatically, knob by knob.
 
     One detail: both averages start at 0, so in the first steps they're too small (after one step
     the average slope is only `0.1 × slope`). Adam corrects this by dividing by `1 − 0.9^t` and
     `1 − 0.999^t` (in code, powers are `**`: `0.9 ** t`), where `t` counts the steps from 1: after step 1 that divides by 0.1 and 0.001,
     which undoes the shrinking exactly; as `t` grows, the correction fades to dividing by 1. (The
-    `1e-8`, that is 0.00000001, is there so we never divide by zero; it changes the answer only
-    in the 9th digit or so, and the check allows for that.)
+    `1e-8`, that is 0.00000001, is there so we never divide by zero.)
 
     ## Exercise 4: adam_step
 
@@ -455,7 +456,7 @@ def _():
 
     1. `m = 0.9 * m + 0.1 * grad` (average slope)
     2. `v = 0.999 * v + 0.001 * grad * grad` (average squared slope)
-    3. `m_hat = m / (1 - 0.9 ** t)` and `v_hat = v / (1 - 0.999 ** t)`
+    3. Two lines: `m_hat = m / (1 - 0.9 ** t)`, then `v_hat = v / (1 - 0.999 ** t)`
     4. `return w - rate * m_hat / (np.sqrt(v_hat) + 1e-8), m, v`
 
     After the check, a cell runs 500 Adam steps on Mia's problem. `range(1, 501)` counts
@@ -498,7 +499,8 @@ def _():
 
     Last loose end. Train the same network on only **500** pictures, for 200 epochs, and compare
     its accuracy on those 500 with its accuracy on the 2,000 test pictures. (The cell after the
-    text runs it twice: with `decay` 0 and with `decay` 0.003; explained below.)
+    text runs it twice: with `decay` 0 and with `decay` 0.003, explained below. It shows, in
+    order: training accuracy, test accuracy, and test accuracy with decay.)
     """)
     return
 
