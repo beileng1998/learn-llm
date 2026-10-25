@@ -17,6 +17,8 @@
   "nav.previous": "上一章",
   "nav.home": "课程目录",
   "nav.next": "下一章",
+  "nav.destination": "{action}：{title}",
+  "nav.label": "章节导航",
   "ch00.to_fahrenheit.freezing": "0 °C（水结冰）等于 32 °F",
   "ch00.to_fahrenheit.boiling": "100 °C（水沸腾）等于 212 °F",
   "ch00.to_fahrenheit.negative": "-40 °C 恰好也是 -40 °F",

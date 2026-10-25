@@ -30,6 +30,8 @@ overwrites it. To restart a chapter from scratch, delete its file in `my-work/` 
 again.
 
 Each chapter has shared **Previous chapter / Course index / Next chapter** navigation.
+Three compact buttons stay in the bottom-left corner. Hover a button to see
+its destination; the first and last chapters keep unavailable buttons disabled.
 The start script adds its navigation cell to new and existing learner copies without
 rewriting your lesson text or answers. Before adding it, it keeps a copy of the original
 in `my-work/.navigation-backups/`. Starting again does not add duplicate navigation cells.

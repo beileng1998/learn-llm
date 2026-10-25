@@ -14,21 +14,24 @@ from learn_llm.course import WORK, chapters
 from learn_llm.i18n import LOCALES, t
 
 
-def navigation_links(number: str, locale: str, base: Path = WORK) -> list[tuple[str, str]]:
-    """Return previous, index and next links using the same chapter list as home."""
+def navigation_links(number: str, locale: str, base: Path = WORK) -> list[tuple[str | None, str]]:
+    """Return three stable slots; unavailable chapter links have no destination."""
     available = chapters(locale, base)
     index = next((i for i, ch in enumerate(available) if ch.number == number), None)
-    links = []
+    links = [
+        (None, t("nav.previous", locale)),
+        ("?file=home.py", t("nav.home", locale)),
+        (None, t("nav.next", locale)),
+    ]
 
-    def chapter_link(ch, key, arrow):
+    def chapter_link(ch, key):
         url = "?" + urlencode({"file": ch.path.relative_to(base).as_posix()})
-        links.append((url, f"{arrow} {t(key, locale)} · {ch.title}"))
+        return url, t("nav.destination", locale, action=t(key, locale), title=ch.title)
 
     if index is not None and index > 0:
-        chapter_link(available[index - 1], "nav.previous", "←")
-    links.append(("?file=home.py", t("nav.home", locale)))
+        links[0] = chapter_link(available[index - 1], "nav.previous")
     if index is not None and index + 1 < len(available):
-        chapter_link(available[index + 1], "nav.next", "→")
+        links[2] = chapter_link(available[index + 1], "nav.next")
     return links
 
 
@@ -44,11 +47,24 @@ def navigation(number: str, default_locale: str, base: Path = WORK):
         locale = default_locale
     # Plain escaped anchors keep chapter titles literal, and use the editor's
     # normal same-origin navigation and unsaved-change handling.
-    links = [
-        mo.Html(f'<a href="{escape(url, quote=True)}">{escape(label)}</a>')
-        for url, label in navigation_links(number, locale, base)
-    ]
-    return mo.sidebar(mo.vstack(links))
+    controls = []
+    icons = ("lucide:chevron-left", "lucide:list", "lucide:chevron-right")
+    for (url, label), icon in zip(navigation_links(number, locale, base), icons):
+        attributes = (
+            'class="learn-llm-navigation__button" '
+            f'aria-label="{escape(label, quote=True)}" title="{escape(label, quote=True)}"'
+        )
+        content = mo.icon(icon, size=18).text
+        if url is None:
+            controls.append(f'<button type="button" {attributes} disabled>{content}</button>')
+        else:
+            controls.append(f'<a href="{escape(url, quote=True)}" {attributes}>{content}</a>')
+    css = Path(__file__).with_name("navigation.css").read_text(encoding="utf-8")
+    return mo.Html(
+        f'<style>{css}</style>'
+        f'<nav class="learn-llm-navigation" aria-label="{escape(t("nav.label", locale))}">'
+        + "".join(controls) + "</nav>"
+    )
 
 
 def _is_cell(node) -> bool:

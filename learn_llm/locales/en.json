@@ -17,6 +17,8 @@
   "nav.previous": "Previous chapter",
   "nav.home": "Course index",
   "nav.next": "Next chapter",
+  "nav.destination": "{action}: {title}",
+  "nav.label": "Chapter navigation",
   "ch00.to_fahrenheit.freezing": "0 °C (water freezes) is 32 °F",
   "ch00.to_fahrenheit.boiling": "100 °C (water boils) is 212 °F",
   "ch00.to_fahrenheit.negative": "-40 °C is also -40 °F",

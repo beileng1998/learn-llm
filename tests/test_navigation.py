@@ -23,13 +23,15 @@ def test_navigation_uses_actual_order_and_has_no_wraparound(workspace):
     first = navigation_links("00", "zh-CN", workspace)
     middle = navigation_links("02", "zh-CN", workspace)
     last = navigation_links("05", "zh-CN", workspace)
-    assert [url for url, _ in first] == ["?file=home.py", "?file=zh-CN%2F02-lesson.py"]
+    assert [url for url, _ in first] == [None, "?file=home.py", "?file=zh-CN%2F02-lesson.py"]
     assert [url for url, _ in middle] == [
         "?file=zh-CN%2F00-lesson.py", "?file=home.py", "?file=zh-CN%2F05-lesson.py",
     ]
-    assert [url for url, _ in last] == ["?file=zh-CN%2F02-lesson.py", "?file=home.py"]
-    assert first[1][1] == "→ 下一章 · zh-CN 02"
-    assert navigation_links("99", "en", workspace) == [("?file=home.py", "Course index")]
+    assert [url for url, _ in last] == ["?file=zh-CN%2F02-lesson.py", "?file=home.py", None]
+    assert first[2][1] == "下一章：zh-CN 02"
+    assert navigation_links("99", "en", workspace) == [
+        (None, "Previous chapter"), ("?file=home.py", "Course index"), (None, "Next chapter"),
+    ]
 
 
 def test_navigation_returns_to_selected_language_after_english_fallback(workspace):
@@ -52,6 +54,29 @@ def test_titles_are_literal_html(workspace):
     html = navigation("00", "en", workspace).text
     assert "&lt;img src=x&gt; &amp; lesson" in html
     assert "<img" not in html
+
+
+def test_navigation_has_three_accessible_controls_without_a_sidebar(workspace):
+    from html.parser import HTMLParser
+
+    class Controls(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.controls = []
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag in ("a", "button") and attrs.get("class") == "learn-llm-navigation__button":
+                self.controls.append((tag, attrs))
+
+    parser = Controls()
+    html = navigation("00", "zh-CN", workspace).text
+    parser.feed(html)
+    assert [tag for tag, attrs in parser.controls] == ["button", "a", "a"]
+    assert "disabled" in parser.controls[0][1]
+    assert all(attrs.get("aria-label") and attrs.get("title") for _, attrs in parser.controls)
+    assert "marimo-sidebar" not in html
+    assert "position: fixed" in html
 
 
 @pytest.mark.parametrize("newline", [b"\n", b"\r\n"])
