@@ -87,4 +87,6 @@ chapter, write the English in brackets: 梯度（gradient）. Add terms as chapt
 | momentum | 动量 | 08 |
 | velocity | 速度 | 08 |
 | overfitting | 过拟合 | 08 |
+| weight | 权重 | 08 |
+| bias | 偏置 | 08 |
 | weight decay | 权重衰减 | 08 |

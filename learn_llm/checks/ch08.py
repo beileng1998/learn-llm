@@ -30,6 +30,12 @@ def _adam(f, steps):
     return _plain(w)
 
 
+def _adam_count(f):
+    """How many things adam_step gave back (None counts as 0, a single array as 1)."""
+    out = f(np.array([1.0, -2.0]), np.zeros(2), np.zeros(2), np.array([0.5, -3.0]), 1, 0.1)
+    return 0 if out is None else len(out) if isinstance(out, tuple) else 1
+
+
 def _adam_reference(steps):
     w, m, v = np.array([1.0, -2.0]), np.zeros(2), np.zeros(2)
     for t in range(1, steps + 1):
@@ -66,6 +72,7 @@ EXERCISES = {
         Case("ch08.momentum_step.two", lambda f: _momentum(f, 2), ([0.855, -1.13], [0.95, -5.7]), tolerance=1e-12, hint="ch08.momentum_step.hint"),
     ],
     "adam_step": [
+        Case("ch08.adam_step.count", _adam_count, 3, hint="ch08.adam_step.hint"),
         Case("ch08.adam_step.one", lambda f: _adam(f, 1), _adam_reference(1), tolerance=1e-6, hint="ch08.adam_step.hint"),
         Case("ch08.adam_step.five", lambda f: _adam(f, 5), _adam_reference(5), tolerance=1e-6, hint="ch08.adam_step.hint"),
     ],

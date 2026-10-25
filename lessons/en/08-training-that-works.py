@@ -141,15 +141,16 @@ def _(X, X_test, Y, test_labels):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The largest first-layer knob is still exactly 0 (`np.abs` makes every number positive, so
-    `np.max(np.abs(...))` is the biggest size), and the test accuracy is about 12%: only the
-    `b`s learned, so it answers the same digit for every picture, about as good as guessing. Random starting knobs break the tie: every detector starts out different.
+    The largest first-layer knob is still exactly 0 (`np.abs` removes the minus signs, so
+    `np.max(np.abs(...))` is the biggest size), and the test accuracy is about 12%: only `b2`,
+    the scores' starting heights, learned (no blame reaches `b1` either), so it answers the same digit for every picture, about as good as guessing. Random starting knobs break the tie: every detector starts out different.
 
     **How big?** Look at one detector's sum for one picture, `z = w0 × x0 + w1 × x1 + … ` over
     `n` inputs, with random knobs of typical size `s` (so variance `s²`; `rng.normal(0, 0.05, …)` gives
     typical size 0.05, variance 0.05²). The knobs are **independent**: each is drawn on its own,
     without looking at the others. A useful fact about sums of independent random parts: **their
-    variances add**. Each part `w × x` has variance `s² × x²` (scaling a random number by `x`
+    variances add**. Each part `w × x` (the picture is fixed; only the knobs are random)
+    has variance `s² × x²` (scaling a random number by `x`
     scales its spread by `x`, so the variance by `x²`). Adding the `n` parts gives
     `s² × (x0² + x1² + …)`, and that sum of `n` squares is `n` times their mean:
 
@@ -203,11 +204,13 @@ def _():
 
     For the first layer, `n = 784` inputs: `√(2 / 784) ≈ 0.05`. For the second, `n = 64`:
     `√(2 / 64) ≈ 0.18`. Chapter 07's two numbers. This starting rule is called **He
-    initialisation**.
+    initialisation**, after the researcher Kaiming He.
 
     Why it matters shows up in deeper networks. Below, pictures pass through 6 layers of 64 ReLU
     detectors, with three choices of starting size. The numbers are √(mean of the squares)
-    of the values after each layer (the input pixels start at about 0.33):
+    of the values after each layer (the input pixels start at about 0.33). As in chapter 07,
+    Python writes very small numbers with `e`: `1.18e-05` means 1.18 × 0.00001, that is
+    0.0000118; the number after `e-` says how many places the point moves left.
     """)
     return
 
@@ -233,7 +236,7 @@ def _():
     mo.md(r"""
     Too small and the values fade to 0 within a few layers: no signal, and (since blame is
     multiplied by the same small knobs on the way back) no blame either. Too big and they grow layer after layer
-    (about 13 times bigger by layer 6).
+    (from 1.8 after layer 1 to 24 after layer 6, about 13 times bigger).
     `√(2 / n)` keeps them steady. That's why deep networks need a reasoned start.
 
     ## Small batches
@@ -379,9 +382,8 @@ def _():
     > `velocity = 0.9 × velocity + slope`, then `knob = knob − rate × velocity`
 
     If the slope stays the same, the velocity grows until it stops changing, that is until
-    `V = 0.9 × V + slope`. Then `0.1 × V = slope`, so `V = 10 × slope`: steady progress
-    becomes up to 10 times faster. (If the slope flips back and forth, the flips partly cancel
-    in the velocity instead.)
+    `V = 0.9 × V + slope`. Take `0.9 × V` from both sides: `0.1 × V = slope`, so
+    `V = 10 × slope`: steady progress becomes up to 10 times faster.
 
     ## Exercise 3: momentum_step
 
@@ -427,16 +429,17 @@ def _():
     Momentum helps, but `w` and `b` still share one learning rate. **Adam** gives each knob its
     own scale. It keeps an **average** of recent slopes, `m = 0.9 × m + 0.1 × slope`. This is
     momentum's velocity times 0.1, which makes it a true average: if the slope stays the same,
-    `m` settles at the slope itself (`0.1 × m = 0.1 × slope`), not 10 times it. Next to it, Adam
+    `m` settles at the slope itself (take `0.9 × m` from both sides of `m = 0.9 × m + 0.1 × slope`: `0.1 × m = 0.1 × slope`), not 10 times it. Next to it, Adam
     keeps an average of the slope **squared**, and divides by its square root, the knob's recent
     typical slope size:
 
     > step = rate × (average slope) / √(average squared slope)
 
     For a knob with huge slopes (`w`), the division makes the step smaller; for a knob with small
-    slopes (`b`), bigger. Every knob ends up moving at a similar pace, about `rate` per step at
-    first. (So below, with rate 1.0, `b` moves about 1 per step: it needs about 107 steps to
-    reach −107.) That is exactly what we did by hand when we rescaled temperatures in chapters 04 and
+    slopes (`b`), bigger. Every knob ends up moving at a similar pace: on the very first step,
+    each moves by exactly `rate`. After that the averages settle and the steps shrink as the
+    knobs near the best line; below, with rate 1.0, `b` is at about −42 after 100 steps, −99
+    after 300 and −107 after 500. That is exactly what we did by hand when we rescaled temperatures in chapters 04 and
     05, now done automatically, knob by knob.
 
     One detail: both averages start at 0, so in the first steps they're too small (after one step
@@ -522,7 +525,7 @@ def _():
 
     **Weight decay** is a standard counter-measure. Add a small penalty for big knobs to the
     loss: `(decay / 2) × (sum of every weight squared)`, over the weights in `W1` and `W2`
-    (biases are usually left alone, hence the name *weight* decay). Nudging one weight `w` moves
+    (the `b`s, usually called *biases*, are left alone, hence the name *weight* decay). Nudging one weight `w` moves
     only its own square; the others don't change. By chapter 02's rule, the slope of `w²` is
     `2 × w`, so the slope of `(decay / 2) × w²` is `(decay / 2) × 2 × w = decay × w`, and the
     step rule becomes
