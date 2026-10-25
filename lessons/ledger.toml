@@ -94,6 +94,20 @@ uses = [
     "reshape", "numpy-zeros", "builtin-range", "curve-model", "comparing-arrays", "test-set",
 ]
 
+[chapters.08]
+introduces = [
+    "variance", "typical-size", "numpy-sqrt", "zero-init-symmetry", "variances-add",
+    "he-init", "vanishing-exploding", "mini-batch", "epoch", "permutation", "range-step",
+    "slicing", "index-array", "argument-unpacking", "momentum", "moving-average", "adam",
+    "bias-correction", "overfitting", "weight-decay", "numpy-eye", "numpy-abs",
+]
+uses = [
+    "neural-network", "softmax", "two-layer-backprop", "accuracy", "one-hot", "random-generator",
+    "random-init", "relu", "mean", "squaring", "gradient-descent", "learning-rate",
+    "step-rule", "test-set", "indexing", "list-append", "builtin-range", "builtin-len",
+    "derivative-rules", "centering-inputs", "elementwise", "function", "return-pair",
+]
+
 [concepts]
 notebook-cell = "a page is made of cells; Shift + Enter runs a code cell and shows its last line's result below it"
 error-message = "a red error box means Python couldn't follow an instruction; read the last line, fix, re-run"
@@ -209,3 +223,25 @@ input-gradient = "dH = G @ W2.T: a value feeding many scores collects their blam
 relu-slope = "ReLU passes blame where z > 0 (slope 1) and blocks it elsewhere (slope 0)"
 boolean-mask = "multiplying by Z > 0 counts True as 1 and False as 0"
 two-layer-backprop = "G, dW2 = H.T @ G, dH = G @ W2.T, dZ = dH * (Z > 0), dW1 = X.T @ dZ"
+variance = "mean of (number − mean)²: how spread out numbers are"
+typical-size = "the square root of the variance (or of the mean square, for numbers centred on 0)"
+numpy-sqrt = "np.sqrt(9) is 3: the number that times itself gives 9"
+zero-init-symmetry = "all-zero knobs make every detector identical forever, and block all blame to W1"
+variances-add = "the variance of a sum of independent random parts is the sum of their variances"
+he-init = "start knobs with typical size √(2 / n) for n inputs, so values keep their size through ReLU layers"
+vanishing-exploding = "too small a start fades values to 0 through layers; too big explodes them"
+mini-batch = "a slope from a random batch of examples: a cheap, rough estimate of the full slope"
+epoch = "one pass through all the batches"
+permutation = "rng.permutation(n) gives 0 … n−1 in random order"
+range-step = "range(0, n, size) counts from 0 in jumps of size; range(1, 501) counts 1 … 500"
+slicing = "a[start:stop] gives positions start … stop−1"
+index-array = "X[[3, 0, 7]] picks rows 3, 0 and 7"
+argument-unpacking = "f(X, *knobs) passes the items of knobs as separate inputs"
+momentum = "velocity = 0.9 × velocity + slope; knob −= rate × velocity"
+moving-average = "an average that keeps adding new values while fading old ones"
+adam = "divide each knob's averaged slope by the root of its averaged squared slope: one pace for every knob"
+bias-correction = "dividing by 1 − 0.9^t (and 1 − 0.999^t) undoes the zero start of the moving averages"
+overfitting = "perfect on training data, worse on new data: the model memorised"
+weight-decay = "add decay × knob to every slope (a penalty on big knobs) so knobs shrink unless the data needs them"
+numpy-eye = "np.eye(10) is the 10 × 10 table with 1s on the diagonal; np.eye(10)[labels] gives one-hot rows"
+numpy-abs = "np.abs makes every number positive"

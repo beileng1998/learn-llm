@@ -24,7 +24,9 @@ def _():
     to about 91%, and stops there. The problem isn't training: it's what the model **can**
     express. Each digit has one template, and a picture's score is a weighted sum of its pixels.
     A weighted sum can say "ink here adds, ink there subtracts". It can't say "a 4 has its top
-    either open **or** closed": two different shapes, both a 4.
+    either open **or** closed": two different shapes, both a 4. A single template has to blend
+    both into one blurry 4 that fits neither well, and a picture with ink in both places would
+    score highest of all, though no 4 looks like that.
 
     In this chapter you'll add the missing ingredient, a **bend**, and build a **neural network**.
 
@@ -36,9 +38,11 @@ def _():
 
     > `relu(z) = z` when `z` is positive, and `0` otherwise
 
-    It's flat at 0, then turns a corner at `z = 0` and rises like a line. On its own that's
+    For example `relu(-3) = 0`, `relu(0) = 0` and `relu(2) = 2`. It's flat at 0, then turns a
+    corner at `z = 0` and rises like a line. On its own that's
     dull. But **add** it to a line and you get a line that changes direction at a point you
-    choose. Here is a line with one bend at 33 °C:
+    choose. Here is a line with one bend at 33 °C (the numbers −105, 12 and −20 are picked by
+    hand):
 
     > guess = −105 + 12 × t − 20 × relu(t − 33)
 
@@ -99,19 +103,21 @@ def _():
     ## A hidden layer
 
     Now the digits. Instead of going straight from pixels to ten scores, we go through a middle
-    step of `h` numbers (we'll use `h = 64`):
+    step of 64 numbers:
 
     1. `Z = X @ W1 + b1`: 64 weighted sums of the pixels, exactly like chapter 06's scores but 64
        of them. `W1` has shape `(784, 64)`: 64 templates. `Z` has shape `(n, 64)`.
-    2. `H = relu(Z)`: bend each one. A template that matches poorly (negative sum) gives 0; one
+    2. `H = relu(Z)`: bend each one, just as `relu(t − 33)` bent the line above (`b1` sets where
+       each bend sits). A template that matches poorly (negative sum) gives 0; one
        that matches well gives how well. Each column of `H` is a little **detector**: it says
        how strongly its pattern is present in the picture, and stays silent otherwise.
     3. `S = H @ W2 + b2`: ten scores, each a weighted sum of the 64 detectors. `W2` has shape
        `(64, 10)`.
 
     `H` is called a **hidden layer** (hidden because it's neither the input nor the answer: it
-    only exists in between), and the whole thing is a **neural network**. Now the score for 4 can say "detector 12 (open top) **or** detector 40
-    (closed top)": each detector that fires adds its share, and a silent one adds nothing.
+    only exists in between), and the whole thing is a **neural network**. Now the score for 4 can
+    say, for example, "detector 12 (open top) **or** detector 40 (closed top)" (made-up numbers):
+    each detector that fires adds its share, and a silent one adds nothing.
 
     The scores then go through chapter 06's softmax and cross-entropy, unchanged. Here they are
     again, ready to use:
@@ -177,10 +183,12 @@ def _():
     mo.md(r"""
     ## Why the bend matters
 
-    Without the ReLU, step 3 would compute `(X @ W1) @ W2`. But `@` can be grouped either way,
-    like ordinary multiplication: `(X @ W1) @ W2 = X @ (W1 @ W2)`, and `W1 @ W2` is a single
-    `(784, 10)` matrix: one template per digit again. Two layers without a bend are no better
-    than one. Check it with small random matrices:
+    Without the ReLU, step 3 would compute `(X @ W1 + b1) @ W2 + b2`. Leave the `b`s aside for a
+    moment: `@` can be grouped either way, like ordinary multiplication, so
+    `(X @ W1) @ W2 = X @ (W1 @ W2)`, and `W1 @ W2` is a single `(784, 10)` matrix: one template per
+    digit again. (The `b`s add up to one fixed row of ten numbers, `b1 @ W2 + b2`, chapter 06's
+    `b`.) Two layers without a bend are no better than one. Check the grouping with small random
+    matrices:
     """)
     return
 
@@ -192,14 +200,15 @@ def _():
     B = rng.normal(0, 1, (4, 5))
     C = rng.normal(0, 1, (5, 2))
     (A @ B) @ C - A @ (B @ C)
-    return (rng,)
+    return
 
 
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    All (almost) zeros: the same matrix either way (the tiny numbers like `1e-16`, meaning
-    0.0000000000000001, are rounding in the last digit).
+    All (almost) zeros: the same matrix either way. Numbers like `2.22044605e-16` mean 2.2 ×
+    0.0000000000000001, rounding in the last digit, and `e+00` on the zeros means "times 1":
+    just 0.
 
     This cell used something new: **random numbers**. `np.random.default_rng(0)` makes a
     random-number generator; the `0` is a starting point (a *seed*) that makes it produce the
@@ -208,9 +217,10 @@ def _():
     typical size).
 
     We need random numbers to start the network. If every knob started at 0, every hidden
-    detector would be identical and stay identical forever (chapter 08 shows why). So we start
-    with small random knobs: typical size 0.05 for `W1` and 0.18 for `W2`. (Why these sizes is
-    also in chapter 08.)
+    detector would be identical and stay identical forever. So we start with small random knobs:
+    typical size 0.05 for `W1` and 0.18 for `W2`. (Chapter 08 explains both: why not zero, and
+    why these sizes.) The next cell uses its own generator with seed 1, so your start is the
+    same as the one described here.
 
     ## The data, and a first forward pass
     """)
@@ -218,14 +228,15 @@ def _():
 
 
 @app.cell
-def _(rng):
+def _():
     train_images, train_labels, test_images, test_labels = load_digits()
     X = train_images.reshape(10000, 784) / 255
     X_test = test_images.reshape(2000, 784) / 255
     Y = one_hot(train_labels)
-    W1_start = rng.normal(0, 0.05, (784, 64))
+    start_rng = np.random.default_rng(1)
+    W1_start = start_rng.normal(0, 0.05, (784, 64))
     b1_start = np.zeros(64)
-    W2_start = rng.normal(0, 0.18, (64, 10))
+    W2_start = start_rng.normal(0, 0.18, (64, 10))
     b2_start = np.zeros(10)
     Z0, H0, S0 = forward(X, W1_start, b1_start, W2_start, b2_start)
     Z0.shape, H0.shape, S0.shape, cross_entropy(softmax(S0), Y)
@@ -238,14 +249,17 @@ def _(rng):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Shapes `(10000, 64)`, `(10000, 64)` and `(10000, 10)`, and a loss near 2.3: random knobs
-    know nothing yet, like chapter 06's zeros.
+    Shapes `(10000, 64)`, `(10000, 64)` and `(10000, 10)`, and a loss of about 2.41, a little
+    worse than the 2.303 of knowing nothing: random knobs make random guesses.
 
     ## Slopes through two layers
 
     Now the gradient. The loss depends on the knobs through a chain of steps
     (`W1` → `Z` → `H` → `S` → loss), and chapter 03 tells us what to do with a chain: walk it
     backwards, passing blame. We take it one step at a time, starting from the end.
+
+    We name each blame with a `d` in front: `dH` is the blame of `H`, `dW1` the blame (slope) of
+    `W1`, and so on.
 
     **Scores.** The loss is chapter 06's cross-entropy of `softmax(S)`, so the blame of the scores
     is chapter 06's `G = (P − Y) / n`, with `P = softmax(S)`.
@@ -255,13 +269,16 @@ def _():
 
     **`H`.** This one is new: chapter 06 never needed the slope for its *inputs*. Take one hidden
     value, `H[i, j]` (picture `i`, detector `j`). It appears in all ten scores of picture `i`:
-    score `S[i, c]` contains `H[i, j] × W2[j, c]`, so the local slope from `S[i, c]` to `H[i, j]`
-    is `W2[j, c]`. One value feeding ten arrows: **blames add** (chapter 03). So
+    written out, `S[i, c] = H[i, 0] × W2[0, c] + … + H[i, 63] × W2[63, c] + b2[c]`, so by chapter
+    03's product rule, nudging `H[i, j]` moves `S[i, c]` by `W2[j, c]` per unit: that's the local
+    slope. One value feeding ten arrows: **blames add** (chapter 03). So
 
     > blame of `H[i, j]` = `G[i, 0] × W2[j, 0] + G[i, 1] × W2[j, 1] + … + G[i, 9] × W2[j, 9]`
 
     That's row `i` of `G` dotted with row `j` of `W2`, which is row `i` of `G` dotted with
-    **column** `j` of `W2.T`. For every `i` and `j` at once: `dH = G @ W2.T`, with shape
+    **column** `j` of `W2.T`. Since entry `[i, j]` of `A @ B` is row `i` of `A` dotted with
+    column `j` of `B`, that's entry `[i, j]` of `G @ W2.T`. For every `i` and `j` at once:
+    `dH = G @ W2.T`, with shape
     `(n, 10) @ (10, 64) = (n, 64)`, the same shape as `H`. Good: every value has a blame of its own
     shape.
 
@@ -273,7 +290,8 @@ def _():
     > `dZ = dH * (Z > 0)`
 
     `Z > 0` gives `True`/`False` for each position, and multiplying by it counts `True` as 1 and
-    `False` as 0. A detector that was silent for a picture takes no blame for it: nudging its
+    `False` as 0. An array like this, used to let some values through and block others, is called
+    a **mask**. A detector that was silent for a picture takes no blame for it: nudging its
     knobs a tiny bit wouldn't change anything.
 
     **`W1` and `b1`.** `Z = X @ W1 + b1` is chapter 06's step once more, with `dZ` as the blame:
@@ -314,7 +332,8 @@ def _():
     ## Checking it by nudging
 
     A whole network's worth of new formulas deserves a check. At the start, nudge one knob of the
-    first layer, `W1[300, 0]` (from pixel 300, near the middle of the picture, into detector 0),
+    first layer, `W1[406, 0]` (from pixel 406, row 14 and column 14: the middle of the picture,
+    into detector 0),
     and see how the loss moves; then do the same for a knob of the second layer, `W2[5, 3]`.
     (This cell needs Exercises 2 and 3.)
     """)
@@ -328,14 +347,14 @@ def _(H0, S0, W1_start, W2_start, X, Y, Z0, b1_start, b2_start):
     base = cross_entropy(softmax(S0), Y)
 
     nudge1 = np.zeros((784, 64))
-    nudge1[300, 0] = h
+    nudge1[406, 0] = h
     S1 = forward(X, W1_start + nudge1, b1_start, W2_start, b2_start)[2]
 
     nudge2 = np.zeros((64, 10))
     nudge2[5, 3] = h
     S2 = forward(X, W1_start, b1_start, W2_start + nudge2, b2_start)[2]
 
-    [(cross_entropy(softmax(S1), Y) - base) / h, dW1[300, 0],
+    [(cross_entropy(softmax(S1), Y) - base) / h, dW1[406, 0],
      (cross_entropy(softmax(S2), Y) - base) / h, dW2[5, 3]]
     return
 
@@ -343,7 +362,8 @@ def _(H0, S0, W1_start, W2_start, X, Y, Z0, b1_start, b2_start):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Each nudge agrees with the formula, in both layers. (We picked a pixel near the middle on
+    Items 0 and 1 are the nudge and the formula for `W1[406, 0]`; items 2 and 3 for `W2[5, 3]`.
+    They agree to three or four digits (a nudge is never exact), in both layers. (We picked a pixel near the middle on
     purpose: a corner pixel is white in every picture, so its knobs never matter and their slope
     is exactly 0, which wouldn't test much.)
 
@@ -357,7 +377,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    train_button = mo.ui.run_button(label="Train the network (about 10 seconds)")
+    train_button = mo.ui.run_button(label="Train the network (may take up to a minute)")
     train_button
     return (train_button,)
 
@@ -382,8 +402,9 @@ def _(W1_start, W2_start, X, X_test, Y, b1_start, b2_start, test_labels, train_b
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    About **94.5%** of the test pictures right, against about 91% for a single-layer model trained
-    for as long: the hidden layer cut the mistakes by about 40%.
+    The three numbers are the training loss, the training accuracy and the test accuracy. The
+    last, about 0.944, means about **94%** of the test pictures right, against about 91% for a
+    single-layer model trained for as long: the hidden layer cut the mistakes by about 40%.
 
     ## What the detectors look for
 
@@ -405,7 +426,7 @@ def _():
     They look much noisier than chapter 06's templates, and the noise is telling. Near the edges,
     every picture is white paper, so those pixels are 0 in every picture: their knobs never take
     any blame (the slope `X.T @ dZ` multiplies by those zeros) and keep their random starting
-    values. That speckle is the random start, untouched. Towards the middle, where the ink is,
+    values. Towards the middle, where the ink is,
     you can make out smoother patches: pieces of strokes that each detector learned to respond
     to, without anyone telling it what to look for. The second layer learns which mix of
     detectors makes each digit.

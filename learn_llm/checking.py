@@ -91,9 +91,10 @@ def explain(result: Result, locale: str) -> str:
     if result.status == ERROR:
         line = t("check.case_error", locale, what=what, error=result.error)
         hint_key = f"error.{result.error_type}"
-        for word in ("Value", "append"):  # a more specific hint, when the error names one of these
-            if f"'{word}'" in result.error and t(f"{hint_key}.{word}", locale) != f"{hint_key}.{word}":
-                hint_key += f".{word}"
+        # A more specific hint when the error mentions one of these.
+        for clue, suffix in (("'Value'", "Value"), ("'append'", "append"), ("truth value", "truth")):
+            if clue in result.error and t(f"{hint_key}.{suffix}", locale) != f"{hint_key}.{suffix}":
+                hint_key += f".{suffix}"
                 break
         hints = [h for h in (t(hint_key, locale), t(result.case.hint, locale) if result.case.hint else "") if h and h != hint_key]
         return " ".join([line, *hints])
